@@ -33,5 +33,9 @@ export function normalizeProduct(product) {
     badge: inferProductBadge(product),
     sellerName: product.sellerName || '',
     sellerEmail: product.sellerEmail || '',
+    sellerId: product.sellerId,
+    averageRating: toNumber(product.averageRating),
+    reviewCount: toNumber(product.reviewCount),
+    sellerRating: toNumber(product.sellerRating),
   }
 }

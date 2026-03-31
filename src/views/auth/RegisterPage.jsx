@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { registerUser } from '../../services/authService'
+import logo from '../../assets/logo.png'
 import './AuthPage.css'
 
 const ROLES = [
@@ -51,54 +52,54 @@ export default function RegisterPage() {
 
   return (
     <div className="auth-shell">
-      {/* Left Panel */}
+      {/* Decorative Left Panel */}
       <div className="auth-left">
-        <Link to="/" className="auth-brand">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-          </svg>
+        <div className="blob-3" />
+        <Link to="/" className="auth-brand" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <img src={logo} alt="Ec-Kart Logo" style={{ width: '30px', height: '30px', objectFit: 'contain' }} />
           Ec-Kart
         </Link>
 
         <div className="auth-left-content">
-          <h2>Join Ec-Kart today</h2>
-          <p>Create your account and start shopping or selling — it only takes a minute.</p>
+          <h2>Start Your <br/> Journey <br/> Plus+</h2>
+          <p>Join thousands of shoppers and sellers on the most premium marketplace.</p>
 
           <div className="auth-left-features">
             <div className="feature-item">
-              <span className="feature-icon">🎉</span>
-              <span>Free to join, always</span>
+              <span className="feature-icon">🎁</span>
+              <span>Exclusive Member Rewards</span>
             </div>
             <div className="feature-item">
-              <span className="feature-icon">📦</span>
-              <span>Sell or buy with ease</span>
+              <span className="feature-icon">🛡️</span>
+              <span>Buyer & Seller Protection</span>
             </div>
             <div className="feature-item">
-              <span className="feature-icon">🌐</span>
-              <span>Reach millions of customers</span>
+              <span className="feature-icon">✨</span>
+              <span>Early Access to Sales</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Right Panel - Form */}
+      {/* Form Right Panel */}
       <div className="auth-right">
+        <div className="auth-right-bg" />
         <div className="auth-card">
           <div className="auth-card-header">
-            <h1>Create your account</h1>
-            <p>Fill in the details below to get started</p>
+            <h1>Create Account</h1>
+            <p>Join the Ec-Kart community today.</p>
           </div>
 
           {error && (
             <div className="auth-error" role="alert">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               {error}
             </div>
           )}
 
           {success && (
             <div className="auth-success" role="status">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
               {success}
             </div>
           )}
@@ -123,7 +124,7 @@ export default function RegisterPage() {
               <div className="form-group">
                 <label htmlFor="reg-email">Email</label>
                 <div className="input-wrapper">
-                  <svg className="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  <svg className="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                   <input id="reg-email" name="email" type="email" placeholder="you@example.com" value={form.email} onChange={handleChange} />
                 </div>
               </div>
@@ -131,12 +132,12 @@ export default function RegisterPage() {
               <div className="form-group">
                 <label htmlFor="reg-password">Password</label>
                 <div className="input-wrapper">
-                  <svg className="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                  <input id="reg-password" name="password" type={showPassword ? 'text' : 'password'} placeholder="Min. 8 characters" value={form.password} onChange={handleChange} />
+                  <svg className="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  <input id="reg-password" name="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••" value={form.password} onChange={handleChange} />
                   <button type="button" className="toggle-password" onClick={() => setShowPassword(p => !p)} aria-label="Toggle password">
                     {showPassword
-                      ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-                      : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                      ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                      : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                     }
                   </button>
                 </div>
@@ -145,18 +146,18 @@ export default function RegisterPage() {
               <div className="form-group">
                 <label htmlFor="confirmPassword">Confirm password</label>
                 <div className="input-wrapper">
-                  <svg className="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                  <input id="confirmPassword" name="confirmPassword" type="password" placeholder="Repeat password" value={form.confirmPassword} onChange={handleChange} />
+                  <svg className="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  <input id="confirmPassword" name="confirmPassword" type="password" placeholder="••••••••" value={form.confirmPassword} onChange={handleChange} />
                 </div>
               </div>
 
               <div className="form-group">
-                <label>I am a…</label>
+                <label>I want to…</label>
                 <div className="role-picker">
                   {ROLES.map(r => (
                     <label key={r.value} className={`role-option ${form.role === r.value ? 'selected' : ''}`}>
                       <input type="radio" name="role" value={r.value} checked={form.role === r.value} onChange={handleChange} />
-                      {r.label}
+                      {r.value === 'ROLE_USER' ? 'Shop' : 'Sell'}
                     </label>
                   ))}
                 </div>
@@ -164,15 +165,15 @@ export default function RegisterPage() {
 
               <button type="submit" className="auth-submit" disabled={loading}>
                 {loading
-                  ? <><span className="spinner" /> Creating account…</>
-                  : 'Create account'
+                  ? <><span className="spinner" /> Joining…</>
+                  : 'Get Started'
                 }
               </button>
             </form>
           )}
 
           <p className="auth-switch">
-            Already have an account? <Link to="/login" className="auth-link">Sign in</Link>
+            Already a member? <Link to="/login" className="auth-link">Sign in</Link>
           </p>
         </div>
       </div>

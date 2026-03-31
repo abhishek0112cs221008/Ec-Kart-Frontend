@@ -1,5 +1,8 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import Navbar from '../../components/Navbar'
+import Footer from '../../components/Footer'
+import logo from '../../assets/logo.png'
 
 function AboutPage() {
   const { isLoggedIn, user, logout } = useAuth()
@@ -8,30 +11,7 @@ function AboutPage() {
 
   return (
     <div className="pallet-shell fade-in">
-      <header className="pallet-header">
-        <Link to="/" className="brand">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="brand-logo">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-          </svg>
-          <span className="brand-name">Ec-Kart</span>
-        </Link>
-        <nav className="header-links">
-          <Link to="/" className={location.pathname === '/' ? 'active' : ''}>Home</Link>
-          <Link to="/shop" className={location.pathname === '/shop' ? 'active' : ''}>Shop</Link>
-          <Link to="/categories" className={location.pathname === '/categories' ? 'active' : ''}>Categories</Link>
-          <Link to="/about" className={location.pathname === '/about' ? 'active' : ''}>About</Link>
-        </nav>
-        <div className="header-actions">
-           {isLoggedIn ? (
-            <div className="header-user">
-              <span className="user-greeting">Hi, {user?.firstName}</span>
-              <button className="btn-logout" onClick={() => { logout(); navigate('/') }}>Logout</button>
-            </div>
-          ) : (
-            <Link to="/login" className="btn-login">Sign in</Link>
-          )}
-        </div>
-      </header>
+      <Navbar />
 
       <main className="pallet-main" style={{ padding: '0 2rem' }}>
         <section className="about-hero">
@@ -50,7 +30,7 @@ function AboutPage() {
              className="about-visual-placeholder" 
              style={{ background: '#f1f5f9', height: '400px', borderRadius: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
            >
-              <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="1"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              <img src={logo} alt="Ec-Kart Logo" style={{ width: '60px', height: '60px', opacity: 0.5, filter: 'grayscale(100%)' }} />
            </div>
         </section>
 
@@ -87,37 +67,7 @@ function AboutPage() {
         </section>
       </main>
 
-      <footer className="pallet-footer">
-        <div className="footer-content">
-          <div className="footer-brand">
-             <span className="brand-name">Ec-Kart</span>
-             <p>Your premium destination for everyday masterpices.</p>
-          </div>
-          <div className="footer-links">
-            <div className="footer-col">
-              <h4>Shop</h4>
-              <a href="#">New Arrivals</a>
-              <a href="#">Best Sellers</a>
-              <a href="#">Sale</a>
-            </div>
-            <div className="footer-col">
-              <h4>Support</h4>
-              <a href="#">FAQ</a>
-              <a href="#">Shipping</a>
-              <a href="#">Returns</a>
-            </div>
-            <div className="footer-col">
-              <h4>Company</h4>
-              <a href="#">About Us</a>
-              <a href="#">Careers</a>
-              <a href="#">Contact</a>
-            </div>
-          </div>
-        </div>
-        <div className="footer-bottom">
-          <p>&copy; {new Date().getFullYear()} Ec-Kart. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

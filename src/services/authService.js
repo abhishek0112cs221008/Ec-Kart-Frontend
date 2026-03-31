@@ -29,3 +29,33 @@ export async function registerUser({ firstName, lastName, email, password, role 
   if (!res.ok) throw new Error(data.message || 'Registration failed')
   return data
 }
+
+export async function fetchCurrentUser() {
+  const token = localStorage.getItem('eckart_token')
+  const res = await fetch(`${BASE}/api/v1/auth/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  if (!res.ok) throw new Error('Failed to fetch user profile')
+  return res.json()
+}
+export async function updateProfile(firstName, lastName, file) {
+  const token = localStorage.getItem('eckart_token')
+  const formData = new FormData()
+  if (firstName) formData.append('firstName', firstName)
+  if (lastName) formData.append('lastName', lastName)
+  if (file) formData.append('file', file)
+
+  const res = await fetch(`${BASE}/api/v1/auth/update-profile`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  })
+
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.message || 'Failed to update profile')
+  return data
+}

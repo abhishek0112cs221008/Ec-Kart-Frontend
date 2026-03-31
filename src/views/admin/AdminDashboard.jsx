@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import logo from '../../assets/logo.png'
 import {
   fetchPendingSellerRequests, approveSellerRequest, rejectSellerRequest,
   createCategory, updateCategory, deleteCategory,
@@ -92,12 +93,12 @@ export default function AdminDashboard() {
     <div className="admin-shell">
       {/* Sidebar */}
       <aside className="admin-sidebar">
-        <div className="admin-logo">
-          <Link to="/" className="brand-link">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-            Ec-Kart <span>Admin</span>
-          </Link>
-        </div>
+          <div className="admin-logo">
+            <Link to="/" className="brand-link" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+              <img src={logo} alt="Ec-Kart Logo" style={{ width: '26px', height: '26px', objectFit: 'contain' }} />
+              Ec-Kart <span>Admin</span>
+            </Link>
+          </div>
 
         <nav className="admin-nav">
           <button className={`nav-item ${activeTab === 'overview' ? 'active' : ''}`} onClick={() => setActiveTab('overview')}>
@@ -119,13 +120,13 @@ export default function AdminDashboard() {
         </nav>
 
         <div className="admin-sidebar-footer">
-          <div className="admin-user-info">
+          <Link to="/profile" className="admin-user-info">
             <div className="admin-avatar">{user?.firstName?.[0]}</div>
             <div className="admin-user-text">
               <p className="admin-user-name">{user?.firstName} {user?.lastName}</p>
               <p className="admin-user-role">Administrator</p>
             </div>
-          </div>
+          </Link>
           <button className="admin-logout-btn" onClick={() => { logout(); navigate('/') }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             Logout
@@ -180,7 +181,7 @@ export default function AdminDashboard() {
                 <div className="recent-activity">
                   <h2>Recent Platform Activity</h2>
                   <div className="activity-placeholder">
-                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#e2e8f0" strokeWidth="1.5"><path d="M12 20v-6M9 20v-10M15 20v-2M3 20h18"/></svg>
+                    <img src={logo} alt="Ec-Kart Logo" style={{ width: '60px', height: '60px', opacity: 0.5, filter: 'grayscale(100%)' }} />
                     <p>Analytics integration coming soon...</p>
                   </div>
                 </div>

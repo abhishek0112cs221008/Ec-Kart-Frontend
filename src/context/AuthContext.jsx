@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useCallback } from 'react'
+import { fetchCurrentUser } from '../services/authService'
 
 const AuthContext = createContext(null)
 
@@ -24,12 +25,27 @@ export function AuthProvider({ children }) {
     setUser(null)
   }, [])
 
+  const refreshUser = useCallback(async () => {
+    try {
+      const userData = await fetchCurrentUser()
+      // Merge with existing user (to keep token/refreshToken if not returned by /me)
+      const updatedUser = { ...user, ...userData }
+      localStorage.setItem('eckart_user', JSON.stringify(updatedUser))
+      setUser(updatedUser)
+      return updatedUser
+    } catch (e) {
+      console.error('Refresh user failed:', e)
+      throw e
+    }
+  }, [user])
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoggedIn: !!user }}>
+    <AuthContext.Provider value={{ user, login, logout, refreshUser, isLoggedIn: !!user }}>
       {children}
     </AuthContext.Provider>
   )
 }
+
 
 export function useAuth() {
   return useContext(AuthContext)

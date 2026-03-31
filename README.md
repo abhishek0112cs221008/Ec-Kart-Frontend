@@ -1,16 +1,49 @@
-# React + Vite
+# Ec-Kart Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A premium, high-performance React application for the Ec-Kart e-commerce platform.
 
-Currently, two official plugins are available:
+## ✨ Highlights
+- **Pallet Design Language**: Implements the clean, minimalist, and elite "Pallet" design aesthetic with high-end typography and smooth transitions.
+- **Real-time Shopping**: Responsive Cart and Wishlist management powered by **React Context API**.
+- **Checkout Flow**: Secure and seamless Stripe redirect and confirmation flow.
+- **Product Reviews**: Comprehensive data-driven review system with sentiment analysis.
+- **User Dashboard**: Advanced profile management, multi-address support, and order tracking stepper.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🛠️ Technology Stack
+- **Library**: React 19+
+- **Build Tool**: Vite 8+
+- **Routing**: React Router DOM 7+
+- **State Management**: React Context & Hooks
+- **Styling**: Vanilla CSS (Optimized for performance and flexibility)
+- **HTTP Client**: Fetch API with custom service wrappers
 
-## React Compiler
+## 📋 Prerequisites
+- **Node.js** (v20 or later)
+- **NPM** or **Yarn**
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ⚙️ Setup & Installation
 
-## Expanding the ESLint configuration
+1. **Clone the repository**
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+3. **Configure API connection**: (Optional) Update `src/shared/config/api.js` with your backend URL.
+4. **Run the application**:
+   ```bash
+   npm run dev
+   ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🗺️ Project Structure
+- `src/components` - Shared UI elements (Navbar, Footer, ProductCard).
+- `src/views` - Feature-based page components (Shop, Cart, Profile).
+- `src/services` - API communication layer.
+- `src/context` - Global application state providers.
+- `src/shared/config` - Centralized configuration.
+
+## 🛍️ Supported Routes
+- `/shop` - Browse all products
+- `/cart` - Review and manage purchases
+- `/profile` - Personal dashboard
+- `/orders` - Order history & tracking
+- `/wishlist` - Saved items
