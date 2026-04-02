@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
@@ -11,11 +12,19 @@ export default function Navbar() {
   const navigate = useNavigate()
   const location = useLocation()
 
+const [searchQuery, setSearchQuery] = useState('')
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault()
+    if (!searchQuery.trim()) return
+    navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`)
+    setSearchQuery('')
+  }
+
   return (
     <header className="pallet-header">
       <Link to="/" className="brand" style={{ textDecoration: 'none', color: 'inherit' }}>
-        <img src={logo} alt="Ec-Kart Logo" className="brand-logo" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-        <span className="brand-name">Ec-Kart</span>
+        <img src={logo} alt="Ec-Kart Logo" className="brand-logo" style={{ width: '62px', height: '62px', objectFit: 'contain' }} />
       </Link>
 
       <nav className="header-links">
@@ -26,9 +35,15 @@ export default function Navbar() {
       </nav>
 
       <div className="header-actions">
-        <button className="icon-btn" aria-label="Search">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
-        </button>
+        <form className="nav-search-form" onSubmit={handleSearchSubmit}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+          <input 
+            type="text" 
+            placeholder="Search products..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </form>
 
         {/* Wishlist icon with badge */}
         <Link to="/wishlist" className="icon-btn nav-icon-link" aria-label="Wishlist" style={{ textDecoration: 'none', position: 'relative' }}>

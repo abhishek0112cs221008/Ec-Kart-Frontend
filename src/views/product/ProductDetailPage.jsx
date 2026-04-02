@@ -9,6 +9,8 @@ import Footer from '../../components/Footer'
 import StarRating from '../../components/StarRating'
 import { getReviewsByProduct, postReview, updateReview } from '../../services/reviewService'
 import AiAssistant from '../../components/AiAssistant'
+import PriceNegotiator from '../../components/PriceNegotiator'
+import { fetchActiveOffers } from '../../services/negotiationService'
 
 function ProductDetailPage() {
   const { id } = useParams()
@@ -29,6 +31,8 @@ function ProductDetailPage() {
   const [editingId, setEditingId] = useState(null)
   const [editForm, setEditForm] = useState({ rating: 5, comment: '' })
   const [submittingUpdate, setSubmittingUpdate] = useState(false)
+  const [isNegotiatorOpen, setIsNegotiatorOpen] = useState(false)
+  const [negotiatedPrice, setNegotiatedPrice] = useState(null)
 
   useEffect(() => {
     async function loadProduct() {
@@ -36,6 +40,16 @@ function ProductDetailPage() {
         setLoading(true)
         const data = await fetchProductById(id)
         setProduct(data)
+        
+        // Load active negotiated offers if logged in
+        if (isLoggedIn) {
+          const offers = await fetchActiveOffers()
+          const activeOffer = offers.find(o => o.product.id === id)
+          if (activeOffer) {
+            setNegotiatedPrice(activeOffer.negotiatedPrice)
+          }
+        }
+
         loadReviews()
       } catch (err) {
         setError(err.message || 'Product not found')
@@ -44,7 +58,7 @@ function ProductDetailPage() {
       }
     }
     loadProduct()
-  }, [id])
+  }, [id, isLoggedIn])
 
   const loadReviews = async () => {
     setReviewsLoading(true)
@@ -213,7 +227,15 @@ function ProductDetailPage() {
             </div>
 
             <div className="pallet-price-box">
-               <span className="pallet-price">₹{product.price?.toLocaleString('en-IN')}</span>
+               {negotiatedPrice ? (
+                 <div className="negotiated-price-display">
+                   <span className="original-price-strikethrough">₹{product.price?.toLocaleString('en-IN')}</span>
+                   <span className="pallet-price negotiated">₹{negotiatedPrice?.toLocaleString('en-IN')}</span>
+                   <span className="price-badge">Negotiated Offer</span>
+                 </div>
+               ) : (
+                 <span className="pallet-price">₹{product.price?.toLocaleString('en-IN')}</span>
+               )}
             </div>
 
             <div className="pallet-seller-tag">
@@ -234,9 +256,19 @@ function ProductDetailPage() {
             <div className="detail-qty-row">
               <span className="detail-qty-label">Purchase Quantity</span>
               <div className="detail-qty-stepper">
-                <button onClick={() => setQuantity(q => Math.max(1, q - 1))} disabled={quantity <= 1}>−</button>
-                <span>{quantity}</span>
-                <button onClick={() => setQuantity(q => Math.min(product.stock || 99, q + 1))} disabled={quantity >= (product.stock || 99)}>+</button>
+                <button 
+                  onClick={() => setQuantity(q => Math.max(1, q - 1))} 
+                  disabled={quantity <= 1 || product.stock === 0}
+                >
+                  −
+                </button>
+                <span>{product.stock === 0 ? 0 : quantity}</span>
+                <button 
+                  onClick={() => setQuantity(q => Math.min(product.stock || 99, q + 1))} 
+                  disabled={product.stock === 0 || quantity >= (product.stock || 99)}
+                >
+                  +
+                </button>
               </div>
             </div>
 
@@ -260,6 +292,18 @@ function ProductDetailPage() {
                 <svg width="24" height="24" viewBox="0 0 24 24" fill={inWishlist ? '#e11d48' : 'none'} stroke={inWishlist ? '#e11d48' : 'currentColor'} strokeWidth="2.5">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                 </svg>
+              </button>
+              <button 
+                className="btn-negotiate-premium"
+                onClick={() => setIsNegotiatorOpen(true)}
+                disabled={product.stock === 0}
+                title={product.stock === 0 ? 'Cannot negotiate for out of stock items' : 'Negotiate price with AI'}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  <path d="M8 10h.01M12 10h.01M16 10h.01" />
+                </svg>
+                <span>{product.stock === 0 ? 'Unavailable' : 'Make Offer'}</span>
               </button>
             </div>
 
@@ -487,6 +531,16 @@ function ProductDetailPage() {
       </main>
 
       <Footer />
+      
+      <PriceNegotiator 
+        isOpen={isNegotiatorOpen} 
+        onClose={() => setIsNegotiatorOpen(false)} 
+        product={product}
+        onAcceptPrice={(price) => {
+           setNegotiatedPrice(price)
+           showToast(`Offer accepted! New price: ₹${price.toLocaleString('en-IN')}`)
+        }}
+      />
     </div>
   )
 }

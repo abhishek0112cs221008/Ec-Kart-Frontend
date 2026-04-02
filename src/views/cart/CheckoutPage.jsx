@@ -158,7 +158,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="summary-row">
                   <span>Shipping Fee</span>
-                  <span>{shipping === 0 ? 'FREE' : `₹${shipping}`}</span>
+                  <span>{shipping === 0 ? 'FREE' : `₹${shipping.toLocaleString('en-IN')}`}</span>
                 </div>
                 <div className="summary-row">
                   <span>Estimated Tax (GST 18%)</span>

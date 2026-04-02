@@ -188,11 +188,11 @@ export default function CartPage() {
                     <div className="cart-summary-row">
                       <span>Shipping</span>
                       <span className={shipping === 0 ? 'cart-free-ship' : ''}>
-                        {shipping === 0 ? 'FREE' : `₹${shipping}`}
+                        {shipping === 0 ? 'FREE' : `₹${shipping.toLocaleString('en-IN')}`}
                       </span>
                     </div>
                     {shipping > 0 && (
-                      <p className="cart-free-ship-hint">Add ₹{(500 - totalPrice).toFixed(0)} more for free shipping</p>
+                      <p className="cart-free-ship-hint">Add ₹{(500 - totalPrice).toLocaleString('en-IN', { maximumFractionDigits: 0 })} more for free shipping</p>
                     )}
                   </div>
 

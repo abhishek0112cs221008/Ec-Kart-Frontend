@@ -127,8 +127,8 @@ export default function OrderDetailsPage() {
                           <p className="item-qty">Quantity: {item.quantity}</p>
                        </div>
                        <div className="item-price">
-                          <p>${(item.priceAtPurchase * item.quantity).toFixed(2)}</p>
-                          <span>(${item.priceAtPurchase.toFixed(2)} each)</span>
+                          <p>₹{(item.priceAtPurchase * item.quantity).toLocaleString('en-IN')}</p>
+                          <span>(₹{item.priceAtPurchase.toLocaleString('en-IN')} each)</span>
                        </div>
                     </div>
                   ))}
@@ -137,9 +137,9 @@ export default function OrderDetailsPage() {
 
               {/* TOTAL SUMMARY */}
               <div className="order-footer-summary">
-                 <div className="summary-row">
+                  <div className="summary-row">
                     <span>Subtotal</span>
-                    <span>${order.totalAmount.toFixed(2)}</span>
+                    <span>₹{order.totalAmount.toLocaleString('en-IN')}</span>
                  </div>
                  <div className="summary-row">
                     <span>Shipping</span>
@@ -147,7 +147,7 @@ export default function OrderDetailsPage() {
                  </div>
                  <div className="summary-row total">
                     <span>Total Amount</span>
-                    <span>${order.totalAmount.toFixed(2)}</span>
+                    <span>₹{order.totalAmount.toLocaleString('en-IN')}</span>
                  </div>
               </div>
             </div>

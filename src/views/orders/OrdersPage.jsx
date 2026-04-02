@@ -142,7 +142,7 @@ export default function OrdersPage() {
                                 </div>
                                 <div className="order-total-row">
                                   <span className="total-label">Total Amount</span>
-                                  <span className="total-value">${order.totalAmount.toFixed(2)}</span>
+                                  <span className="total-value">₹{order.totalAmount.toLocaleString('en-IN')}</span>
                                 </div>
                               </div>
 
