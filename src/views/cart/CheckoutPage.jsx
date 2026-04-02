@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useCart } from '../../context/CartContext'
 import { fetchAddresses } from '../../services/addressService'
 import { createOrder } from '../../services/orderService'
-import { createCheckoutSession } from '../../services/paymentService'
+import { createRazorpayOrder, confirmPayment } from '../../services/paymentService'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
 import './CheckoutPage.css'
@@ -34,6 +34,16 @@ export default function CheckoutPage() {
     }
   }
 
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement('script')
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+      script.onload = () => resolve(true)
+      script.onerror = () => resolve(false)
+      document.body.appendChild(script)
+    })
+  }
+
   const handlePlaceOrder = async () => {
     if (!selectedAddressId) {
       setError('Please select a shipping address')
@@ -44,17 +54,93 @@ export default function CheckoutPage() {
     setError(null)
 
     try {
+      const res = await loadRazorpayScript()
+      if (!res) {
+        setError('Razorpay SDK failed to load. Are you online?')
+        setLoading(false)
+        return
+      }
+
       const address = addresses.find(a => a.id === selectedAddressId)
       const addressString = `${address.streetAddress}, ${address.city}, ${address.state} - ${address.zipCode}, ${address.country}`
       
       // 1. Create Order
       const order = await createOrder(addressString)
       
-      // 2. Create Payment Session
-      const session = await createCheckoutSession(order.id)
+      // 2. Create Razorpay Order on Backend
+      const razorpayData = await createRazorpayOrder(order.id)
       
-      // 3. Redirect to Stripe
-      window.location.href = session.url
+      // 3. Open Razorpay Modal
+      const options = {
+        key: razorpayData.keyId,
+        amount: razorpayData.amount,
+        currency: razorpayData.currency,
+        name: 'Eckart E-Commerce',
+        description: `Order #${order.id}`,
+        order_id: razorpayData.razorpayOrderId,
+        handler: async function (response) {
+          try {
+            setLoading(true)
+            const result = await confirmPayment({
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpaySignature: response.razorpay_signature
+            })
+            
+            if (result.status === 'OK') {
+              navigate('/payment/success')
+            } else {
+              setError(result.message || 'Payment verification failed')
+            }
+          } catch (err) {
+            setError(err.message || 'Verification failed')
+          } finally {
+            setLoading(false)
+          }
+        },
+        prefill: {
+          name: razorpayData.name,
+          email: razorpayData.email,
+          contact: razorpayData.contact || '8888888888',
+        },
+        theme: {
+          color: '#2563eb',
+        },
+        modal: {
+          ondismiss: function() {
+            setLoading(false)
+          },
+        },
+        config: {
+          display: {
+            blocks: {
+              banks: {
+                name: 'All Payment Methods',
+                instruments: [
+                  {
+                    method: 'upi',
+                  },
+                  {
+                    method: 'card',
+                  },
+                ],
+              },
+            },
+            sequence: ['block.banks'],
+            preferences: {
+              show_default_blocks: true,
+            },
+          },
+        },
+      }
+
+      const rzp1 = new window.Razorpay(options)
+      rzp1.on('payment.failed', function (response) {
+        setError(response.error.description)
+        setLoading(false)
+      })
+      rzp1.open()
+      
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.')
       setLoading(false)
