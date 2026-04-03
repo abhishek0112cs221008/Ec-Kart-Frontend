@@ -10,7 +10,7 @@ function PriceNegotiator({ isOpen, onClose, product, onAcceptPrice }) {
   const [messages, setMessages] = useState([
     { 
       role: 'assistant', 
-      content: `Hi! I'm your Personal Deal assistant. I see you're eyeing the '${product.name}'. Want to skip the listed price and make a direct offer?` 
+      content: `Hi! I'm your Personal Deal assistant. I see you're eyeing the '${product?.name || 'this item'}'. Want to skip the listed price and make a direct offer?` 
     }
   ])
   const [input, setInput] = useState('')
@@ -90,7 +90,15 @@ function PriceNegotiator({ isOpen, onClose, product, onAcceptPrice }) {
         }, 800)
       }
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Connecting... Please try again in a moment!' }])
+      const errorMsg = err.message || err
+      const isAuthError = errorMsg.toLowerCase().includes('auth') || errorMsg.includes('401')
+      
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: isAuthError 
+          ? 'It looks like your session has expired. Please log in again to continue this negotiation.' 
+          : 'Connecting... Please try again in a moment!' 
+      }])
     } finally {
       setLoading(false)
     }

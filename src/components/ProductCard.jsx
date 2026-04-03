@@ -53,81 +53,62 @@ export default function ProductCard({ product }) {
   return (
     <Link
       to={`/product/${product.id}`}
-      className="pc-link"
+      className="product-shop-card-link"
       aria-label={product.name}
     >
-      <article className="pc-card">
-        {/* Image area */}
-        <div className="pc-media">
+      <article className="product-shop-card">
+        <div className="product-shop-media">
           {product.imageUrl ? (
-            <img src={product.imageUrl} alt={product.name} className="pc-img" />
+            <img src={product.imageUrl} alt={product.name} className="product-shop-img" />
           ) : (
-            <div className="pc-placeholder">
+            <div className="product-shop-placeholder">
               {product.categoryName?.slice(0, 1) || 'P'}
             </div>
           )}
-
-          {/* Hover overlay with action buttons */}
-          <div className="pc-overlay">
-            <button
-              className="pc-action-btn pc-cart-btn"
-              onClick={handleAddToCart}
-              disabled={cartBusy || product.stock === 0}
-              aria-label="Add to cart"
-              title={product.stock === 0 ? 'Out of stock' : 'Add to cart'}
-            >
-              {cartBusy ? (
-                <span className="pc-spinner" />
-              ) : (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-                </svg>
-              )}
-              <span className="pc-action-label">
-                {product.stock === 0 ? 'Out of stock' : 'Add to Cart'}
-              </span>
-            </button>
-
-            <button
-              className={`pc-action-btn pc-wish-btn ${inWishlist ? 'active' : ''}`}
-              onClick={handleWishlistToggle}
-              disabled={wishBusy}
-              aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
-              title={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
-            >
-              {wishBusy ? (
-                <span className="pc-spinner" />
-              ) : (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill={inWishlist ? '#e11d48' : 'none'} stroke={inWishlist ? '#e11d48' : 'currentColor'} strokeWidth="2.2">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                </svg>
-              )}
-            </button>
-          </div>
-
-          {/* Flash feedback */}
-          {flashMsg && (
-            <div className="pc-flash">{flashMsg}</div>
-          )}
+          
+          <button
+            className={`product-shop-wish-btn ${inWishlist ? 'active' : ''}`}
+            onClick={handleWishlistToggle}
+            disabled={wishBusy}
+            aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill={inWishlist ? '#e11d48' : 'none'} stroke={inWishlist ? '#e11d48' : 'currentColor'} strokeWidth="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
         </div>
 
-        {/* Info */}
-        <div className="pc-body">
-          <p className="pc-category">{product.categoryName}</p>
-          <h3 className="pc-name">{product.name}</h3>
-          <div className="pc-rating-summary">
-            <StarRating rating={product.averageRating || 0} size="sm" />
-            {product.reviewCount > 0 && <span className="pc-rating-count">({product.reviewCount})</span>}
+        <div className="product-shop-body">
+          <h3 className="product-shop-name">{product.name}</h3>
+          
+          <div className="product-shop-rating">
+            <StarRating rating={product.averageRating || 0} size="xs" />
+            <span className="product-shop-review-count">
+              ({product.reviewCount || 0} Reviews)
+            </span>
           </div>
-          <div className="pc-price-row">
-            <span className="pc-price">₹{Number(product.price).toLocaleString('en-IN')}</span>
-            {inWishlist && (
-              <span className="pc-wish-dot" title="In your wishlist" aria-label="In wishlist">♥</span>
+
+          <div className="product-shop-price-row">
+            <span className="product-shop-price">₹{Number(product.price).toLocaleString('en-IN')}</span>
+            {product.stock <= 5 && product.stock > 0 && (
+              <span className="product-shop-stock-low">Only {product.stock} left!</span>
             )}
           </div>
+
+          <button
+            className="product-shop-add-btn"
+            onClick={handleAddToCart}
+            disabled={cartBusy || product.stock === 0}
+          >
+            {cartBusy ? <span className="loader-sm" /> : (product.stock === 0 ? 'Out of Stock' : 'Add to Cart')}
+          </button>
         </div>
+
+        {flashMsg && (
+          <div className="product-shop-flash">{flashMsg}</div>
+        )}
       </article>
     </Link>
+
   )
 }

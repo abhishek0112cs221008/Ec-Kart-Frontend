@@ -32,6 +32,9 @@ const [searchQuery, setSearchQuery] = useState('')
         <Link to="/shop" className={location.pathname === '/shop' ? 'active' : ''}>Shop</Link>
         <Link to="/categories" className={location.pathname === '/categories' ? 'active' : ''}>Categories</Link>
         <Link to="/about" className={location.pathname === '/about' ? 'active' : ''}>About</Link>
+        {isLoggedIn && user?.role === 'ROLE_SELLER' && (
+          <Link to="/seller/dashboard" className={location.pathname === '/seller/dashboard' ? 'active' : ''} style={{ color: '#10b981' }}>Seller Dashboard</Link>
+        )}
       </nav>
 
       <div className="header-actions">
@@ -45,13 +48,13 @@ const [searchQuery, setSearchQuery] = useState('')
           />
         </form>
 
-        {/* Wishlist icon with badge */}
-        <Link to="/wishlist" className="icon-btn nav-icon-link" aria-label="Wishlist" style={{ textDecoration: 'none', position: 'relative' }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill={wishlistCount > 0 ? '#e11d48' : 'none'} stroke={wishlistCount > 0 ? '#e11d48' : 'currentColor'} strokeWidth="2">
+        {/* Wishlist/Like icon with prominent Black/White look */}
+        <Link to="/wishlist" className="icon-btn nav-icon-link monochrome-like" aria-label="Wishlist" style={{ textDecoration: 'none', position: 'relative' }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill={wishlistCount > 0 ? '#000000' : 'none'} stroke={wishlistCount > 0 ? '#000000' : 'currentColor'} strokeWidth="2.5">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </svg>
           {isLoggedIn && wishlistCount > 0 && (
-            <span className="nav-badge" aria-label={`${wishlistCount} items in wishlist`}>{wishlistCount > 99 ? '99+' : wishlistCount}</span>
+            <span className="nav-badge monochrome-badge" aria-label={`${wishlistCount} items in wishlist`}>{wishlistCount > 99 ? '99+' : wishlistCount}</span>
           )}
         </Link>
 

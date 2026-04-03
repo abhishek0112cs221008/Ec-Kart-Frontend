@@ -3,15 +3,15 @@
 :root {
   --font-sans: 'Inter', sans-serif;
   --font-display: 'Outfit', sans-serif;
-  --clr-bg: #f8fafc;
-  --clr-surface: rgba(255, 255, 255, 0.75);
+  --clr-bg: #fff;
+  --clr-surface: rgba(255, 255, 255, 0.9);
   --clr-surface-solid: #ffffff;
-  --clr-primary: #4f46e5;
-  --clr-primary-light: #818cf8;
-  --clr-accent: #fbbf24;
-  --clr-text: #0f172a;
-  --clr-text-muted: #64748b;
-  --clr-border: rgba(15, 23, 42, 0.08);
+  --clr-primary: #10b981; /* Emerald Green */
+  --clr-primary-light: #d1fae5;
+  --clr-accent: #059669;
+  --clr-text: #000000;
+  --clr-text-muted: #4b5563;
+  --clr-border: #111111;
   
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
   --shadow-md: 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.04);

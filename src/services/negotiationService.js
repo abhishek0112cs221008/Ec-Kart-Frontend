@@ -2,7 +2,7 @@ import { postJson, getJson } from '../shared/lib/httpClient'
 
 export const negotiatePrice = async (productId, message, history = []) => {
     try {
-        return await postJson('/api/negotiation/chat', {
+        return await postJson('/api/v1/negotiation/chat', {
             productId,
             message,
             history
@@ -15,7 +15,7 @@ export const negotiatePrice = async (productId, message, history = []) => {
 
 export const fetchActiveOffers = async () => {
     try {
-        return await getJson('/api/negotiation/active-offers')
+        return await getJson('/api/v1/negotiation/active-offers')
     } catch (error) {
         console.error('Error fetching active offers:', error)
         return []

@@ -58,7 +58,7 @@ function AiAssistant({ reviews }) {
   }
 
   return (
-    <div className="ai-assistant-wrapper">
+    <div className="ai-assistant-wrapper" id="ai-assistant-section">
       <div className="ai-assistant-card">
         <div className="ai-assistant-header">
           <h3>

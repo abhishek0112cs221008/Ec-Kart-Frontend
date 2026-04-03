@@ -11,9 +11,9 @@ export default function StarRating({ rating = 0, count = null, size = 'md', onRa
 
   const getSizeClass = () => {
     switch (size) {
-      case 'sm': return '14px'
-      case 'lg': return '24px'
-      default: return '18px'
+      case 'sm': return '16px'
+      case 'lg': return '32px'
+      default: return '22px'
     }
   }
 
@@ -26,8 +26,8 @@ export default function StarRating({ rating = 0, count = null, size = 'md', onRa
             width={getSizeClass()}
             height={getSizeClass()}
             viewBox="0 0 24 24"
-            fill={star <= (editable ? rating : fullRating) ? '#f59e0b' : '#d1d5db'}
-            stroke={star <= (editable ? rating : fullRating) ? '#f59e0b' : '#94a3b8'}
+            fill={star <= (editable ? rating : fullRating) ? '#000000' : '#e5e7eb'}
+            stroke={star <= (editable ? rating : fullRating) ? '#000000' : '#d1d5db'}
             strokeWidth="1"
             style={{ cursor: editable ? 'pointer' : 'default', transition: 'all 0.2s ease' }}
             onClick={() => editable && onRate && onRate(star)}
@@ -38,8 +38,8 @@ export default function StarRating({ rating = 0, count = null, size = 'md', onRa
         ))}
       </div>
       {count !== null && (
-        <span className="rating-text" style={{ fontSize: '0.85rem', color: '#64748b', marginLeft: '4px', fontWeight: '500' }}>
-          {rating.toFixed(1)} {count !== null && `(${count})`}
+        <span className="rating-text" style={{ fontSize: '0.95rem', color: '#000', marginLeft: '8px', fontWeight: '900' }}>
+          {typeof rating === 'number' ? rating.toFixed(1) : '0.0'} {count !== null && `(${count})`}
         </span>
       )}
     </div>

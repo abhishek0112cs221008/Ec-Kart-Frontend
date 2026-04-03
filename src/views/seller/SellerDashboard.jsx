@@ -1,384 +1,465 @@
-import { useState, useEffect, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../../context/AuthContext'
-import {
-  fetchMyProducts, fetchCategories,
-  createProduct, updateProduct, deleteProduct,
-} from '../../services/sellerService'
-import logo from '../../assets/logo.png'
-import './SellerDashboard.css'
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { getApiBaseUrl } from '../../shared/config/api';
+import logo from '../../assets/logo.png';
+import './SellerDashboard.css';
 
-const EMPTY_FORM = { name: '', description: '', price: '', stock: '', categoryId: '' }
+const BASE = getApiBaseUrl();
 
-export default function SellerDashboard() {
-  const { user, logout, isLoggedIn, refreshUser } = useAuth()
+const SellerDashboard = () => {
+    const { logout, user } = useAuth();
+    const token = user?.accessToken;
+    const navigate = useNavigate();
+    const [activeTab, setActiveTab] = useState('overview');
+    const [stats, setStats] = useState(null);
+    const [orders, setOrders] = useState([]);
+    const [inventory, setInventory] = useState([]);
+    const [profile, setProfile] = useState(null);
+    const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [updatingStatus, setUpdatingStatus] = useState(null);
 
-  const navigate = useNavigate()
+    // Modal state
+    const [showModal, setShowModal] = useState(false);
+    const [modalType, setModalType] = useState('add_product'); // add_product, edit_product
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [productForm, setProductForm] = useState({
+        name: '',
+        description: '',
+        price: '',
+        floorPrice: '',
+        stock: '',
+        categoryId: '',
+        targetGroup: ''
+    });
+    const [productImage, setProductImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
 
-  const [products, setProducts] = useState([])
-  const [categories, setCategories] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState('')
-  const [successMsg, setSuccessMsg] = useState('')
+    useEffect(() => {
+        if (token) {
+            fetchInitialData();
+        }
+    }, [token]);
 
-  // Modal state
-  const [modalOpen, setModalOpen] = useState(false)
-  const [editingProduct, setEditingProduct] = useState(null) // null = create mode
-  const [form, setForm] = useState(EMPTY_FORM)
-  const [imageFile, setImageFile] = useState(null)
-  const [imagePreview, setImagePreview] = useState(null)
-  const fileInputRef = useRef()
+    const fetchInitialData = async () => {
+        if (!token) return;
+        setLoading(true);
 
-  // Delete confirm
-  const [deleteId, setDeleteId] = useState(null)
-
-  // Redirect if not seller
-  useEffect(() => {
-    if (!isLoggedIn) { navigate('/login'); return }
-  }, [isLoggedIn, navigate])
-
-  // Load data
-  useEffect(() => {
-    Promise.all([fetchMyProducts(), fetchCategories()])
-      .then(([prods, cats]) => { setProducts(prods); setCategories(cats) })
-      .catch(e => setError(e.message))
-      .finally(() => setLoading(false))
-  }, [])
-
-  function openCreate() {
-    setEditingProduct(null)
-    setForm(EMPTY_FORM)
-    setImageFile(null)
-    setImagePreview(null)
-    setModalOpen(true)
-  }
-
-  function openEdit(product) {
-    setEditingProduct(product)
-    setForm({
-      name: product.name || '',
-      description: product.description || '',
-      price: product.price || '',
-      stock: product.stock || '',
-      categoryId: product.categoryId || '',
-    })
-    setImageFile(null)
-    setImagePreview(product.imageUrl || null)
-    setModalOpen(true)
-  }
-
-  function handleImageChange(e) {
-    const file = e.target.files[0]
-    if (!file) return
-    setImageFile(file)
-    setImagePreview(URL.createObjectURL(file))
-  }
-
-  function handleFormChange(e) {
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
-  }
-
-  async function handleSubmit(e) {
-    e.preventDefault()
-    if (!form.name || !form.price || !form.stock || !form.categoryId) {
-      setError('Please fill in all required fields.')
-      return
-    }
-    setSubmitting(true)
-    setError('')
-    try {
-      if (editingProduct) {
-        const updated = await updateProduct(editingProduct.id, form, imageFile)
-        setProducts(prev => prev.map(p => p.id === updated.id ? updated : p))
-        setSuccessMsg('Product updated successfully!')
-      } else {
-        const created = await createProduct(form, imageFile)
-        setProducts(prev => [created, ...prev])
-        setSuccessMsg('Product created successfully!')
-      }
-      setModalOpen(false)
-      setTimeout(() => setSuccessMsg(''), 3000)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setSubmitting(false)
-    }
-  }
-
-  async function handleRefreshStatus() {
-    try {
-      setLoading(true)
-      await refreshUser()
-      setSuccessMsg('Account status refreshed!')
-      setTimeout(() => setSuccessMsg(''), 3000)
-    } catch (e) {
-      setError('Could not refresh status. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function handleDelete() {
-
-    if (!deleteId) return
-    try {
-      await deleteProduct(deleteId)
-      setProducts(prev => prev.filter(p => p.id !== deleteId))
-      setSuccessMsg('Product deleted.')
-      setTimeout(() => setSuccessMsg(''), 3000)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setDeleteId(null)
-    }
-  }
-
-  const totalRevenue = Array.isArray(products) ? products.reduce((sum, p) => sum + (parseFloat(p.price) || 0) * (p.stock || 0), 0) : 0
-  const activeCount = Array.isArray(products) ? products.filter(p => p.active).length : 0
-
-
-  return (
-    <div className="sd-shell">
-      {/* SIDEBAR */}
-      <aside className="sd-sidebar">
-        <div className="sd-logo">
-          <Link to="/" style={{ color: 'inherit', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            <img src={logo} alt="Ec-Kart Logo" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
-            <span style={{ fontWeight: 800, fontSize: '1.2rem', letterSpacing: '-0.02em' }}>Ec-Kart</span>
-          </Link>
-        </div>
-
-        <nav className="sd-nav">
-          <a className="sd-nav-item active" href="#">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-            Dashboard
-          </a>
-          <a className="sd-nav-item" href="#">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-            Products
-          </a>
-          <a className="sd-nav-item" href="#">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            Orders
-          </a>
-          <Link className="sd-nav-item" to="/profile">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            Profile
-          </Link>
-        </nav>
-
-        <button className="sd-logout" onClick={() => { logout(); navigate('/') }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          Logout
-        </button>
-      </aside>
-
-      {/* MAIN CONTENT */}
-      <main className="sd-main">
-        {/* Top bar */}
-        <header className="sd-topbar">
-          <div>
-            <h1 className="sd-page-title">Seller Dashboard</h1>
-            <p className="sd-page-sub">Welcome back, {user?.firstName || 'Seller'} 👋</p>
-          </div>
-          <button className="sd-add-btn" onClick={openCreate}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add Product
-          </button>
-        </header>
-
-        {/* Success/Error banners */}
-        {successMsg && <div className="sd-banner sd-success">{successMsg}</div>}
-        {error && <div className="sd-banner sd-error">{error} <button onClick={() => setError('')}>✕</button></div>}
- 
-        {/* PENDING VERIFICATION STATE */}
-        {user?.role === 'ROLE_SELLER' && !user?.sellerVerified ? (
-          <div className="sd-pending-state">
-            <div className="pending-card">
-              <div className="pending-icon">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                  <path d="M12 9v3l2 2"/>
-                </svg>
-              </div>
-              <h2>Verification Pending</h2>
-              <p>Wait for verification within some times or soon</p>
-              <div className="pending-hint">
-                Our team is currently reviewing your account details. You will be able to manage your store and products as soon as you are verified.
-              </div>
-              <button className="sd-refresh-btn" onClick={handleRefreshStatus} disabled={loading}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-                {loading ? 'Refreshing...' : 'Refresh Status'}
-              </button>
-            </div>
-          </div>
-        ) : (
-          <>
-            {/* Stats */}
-        <div className="sd-stats">
-          <div className="stat-card">
-            <p className="stat-label">Total Products</p>
-            <p className="stat-value">{products.length}</p>
-          </div>
-          <div className="stat-card">
-            <p className="stat-label">Active Listings</p>
-            <p className="stat-value">{activeCount}</p>
-          </div>
-          <div className="stat-card">
-            <p className="stat-label">Inventory Value</p>
-            <p className="stat-value">₹{totalRevenue.toLocaleString('en-IN')}</p>
-          </div>
-          <div className="stat-card">
-            <p className="stat-label">Categories</p>
-            <p className="stat-value">{new Set(products.map(p => p.categoryName)).size}</p>
-          </div>
-        </div>
-
-        {/* Product Table */}
-        <div className="sd-table-card">
-          <div className="sd-table-header">
-            <h2>My Products</h2>
-            <span>{products.length} items</span>
-          </div>
-
-          {loading ? (
-            <div className="sd-loading">
-              {Array.from({ length: 4 }).map((_, i) => <div key={i} className="skeleton-row" />)}
-            </div>
-          ) : products.length === 0 ? (
-            <div className="sd-empty">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-              <p>No products yet</p>
-              <button className="sd-add-btn" onClick={openCreate}>Add your first product</button>
-            </div>
-          ) : (
-            <table className="sd-table">
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>Category</th>
-                  <th>Price</th>
-                  <th>Stock</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map(product => (
-                  <tr key={product.id}>
-                    <td>
-                      <div className="product-cell">
-                        <div className="product-thumb">
-                          {product.imageUrl
-                            ? <img src={product.imageUrl} alt={product.name} />
-                            : <span>{product.name?.slice(0, 1)}</span>}
-                        </div>
-                        <div>
-                          <p className="product-name">{product.name}</p>
-                          <p className="product-desc">{product.description?.slice(0, 40)}…</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td><span className="cat-badge">{product.categoryName}</span></td>
-                    <td><strong>₹{parseFloat(product.price).toLocaleString('en-IN')}</strong></td>
-                    <td>{product.stock}</td>
-                    <td>
-                      <span className={`status-badge ${product.active ? 'active' : 'inactive'}`}>
-                        {product.active ? 'Active' : 'Inactive'}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="action-btns">
-                        <button className="edit-btn" onClick={() => openEdit(product)}>Edit</button>
-                        <button className="del-btn" onClick={() => setDeleteId(product.id)}>Delete</button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-          </>
-        )}
-      </main>
-
-      {/* ADD / EDIT MODAL */}
-      {modalOpen && (
-        <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) setModalOpen(false) }}>
-          <div className="modal-card">
-            <div className="modal-header">
-              <h2>{editingProduct ? 'Edit Product' : 'Add New Product'}</h2>
-              <button className="modal-close" onClick={() => setModalOpen(false)}>✕</button>
-            </div>
-
-            {error && <div className="auth-error" style={{ marginBottom: '1rem' }}>{error}</div>}
-
-            <form className="modal-form" onSubmit={handleSubmit}>
-              {/* Image Upload */}
-              <div className="image-upload-area" onClick={() => fileInputRef.current.click()}>
-                {imagePreview
-                  ? <img src={imagePreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '10px' }} />
-                  : <>
-                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                      <p>Click to upload product image</p>
-                    </>
+        const fetchData = async (url, setter) => {
+            try {
+                const res = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setter(data);
                 }
-                <input ref={fileInputRef} type="file" accept="image/*" hidden onChange={handleImageChange} />
-              </div>
+            } catch (err) {
+                console.error(`Error fetching data:`, err);
+            }
+        };
 
-              <div className="form-grid">
-                <div className="form-group">
-                  <label>Product Name *</label>
-                  <input name="name" value={form.name} onChange={handleFormChange} placeholder="e.g. Wireless Headphones" required />
-                </div>
-                <div className="form-group">
-                  <label>Category *</label>
-                  <select name="categoryId" value={form.categoryId} onChange={handleFormChange} required>
-                    <option value="">Select a category</option>
-                    {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>Price (₹) *</label>
-                  <input name="price" type="number" min="0" step="0.01" value={form.price} onChange={handleFormChange} placeholder="0.00" required />
-                </div>
-                <div className="form-group">
-                  <label>Stock Quantity *</label>
-                  <input name="stock" type="number" min="0" value={form.stock} onChange={handleFormChange} placeholder="0" required />
-                </div>
-                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label>Description</label>
-                  <textarea name="description" value={form.description} onChange={handleFormChange} rows={3} placeholder="Describe your product..." />
-                </div>
-              </div>
+        // Run fetches in parallel but independently
+        await Promise.all([
+            fetchData(`${BASE}/api/v1/seller/dashboard/stats`, setStats),
+            fetchData(`${BASE}/api/v1/seller/dashboard/orders`, setOrders),
+            fetchData(`${BASE}/api/v1/products/my`, setInventory),
+            fetchData(`${BASE}/api/v1/seller/profile`, setProfile),
+            fetchData(`${BASE}/api/v1/categories`, setCategories)
+        ]);
 
-              <div className="modal-actions">
-                <button type="button" className="btn-cancel" onClick={() => setModalOpen(false)}>Cancel</button>
-                <button type="submit" className="btn-save" disabled={submitting}>
-                  {submitting ? 'Saving…' : editingProduct ? 'Save Changes' : 'Create Product'}
-                </button>
-              </div>
-            </form>
-          </div>
+        setLoading(false);
+    };
+
+    const handleStatusUpdate = async (orderId, newStatus) => {
+        setUpdatingStatus(orderId);
+        try {
+            const res = await fetch(`${BASE}/api/v1/seller/orders/${orderId}/status?status=${newStatus}`, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) fetchInitialData();
+        } catch (error) {
+            alert("Status update failed");
+        } finally {
+            setUpdatingStatus(null);
+        }
+    };
+
+    const handleProductSubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('name', productForm.name);
+        formData.append('description', productForm.description);
+        formData.append('price', productForm.price);
+        formData.append('stock', productForm.stock);
+        formData.append('categoryId', productForm.categoryId);
+        if (productForm.floorPrice) formData.append('floorPrice', productForm.floorPrice);
+        if (productForm.targetGroup) formData.append('targetGroup', productForm.targetGroup);
+        if (productImage) formData.append('file', productImage);
+
+        const url = modalType === 'add_product' 
+            ? `${BASE}/api/v1/products`
+            : `${BASE}/api/v1/products/${selectedProduct.id}`;
+        
+        try {
+            const res = await fetch(url, {
+                method: modalType === 'add_product' ? 'POST' : 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: formData
+            });
+
+            if (res.ok) {
+                setImagePreview(null);
+                setProductImage(null);
+                setShowModal(false);
+                fetchInitialData();
+            } else {
+                const data = await res.json();
+                alert(data.message || "Failed to save product");
+            }
+        } catch (error) {
+            alert("Error saving product");
+        }
+    };
+
+    const handleProductDelete = async (productId) => {
+        if (!window.confirm("Are you sure you want to hide/delete this product?")) return;
+        try {
+            const res = await fetch(`${BASE}/api/v1/products/${productId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) fetchInitialData();
+        } catch (error) {
+            alert("Deletion failed");
+        }
+    };
+
+    const handleProfileUpdate = async (e) => {
+        e.preventDefault();
+        try {
+            const res = await fetch(`${BASE}/api/v1/seller/profile`, {
+                method: 'PUT',
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(profile)
+            });
+            if (res.ok) alert("Profile updated!");
+        } catch (error) {
+            alert("Profile update failed");
+        }
+    };
+
+    const openEditModal = (product) => {
+        setSelectedProduct(product);
+        setProductForm({
+            name: product.name,
+            description: product.description,
+            price: product.price,
+            floorPrice: product.floorPrice || '',
+            stock: product.stock,
+            categoryId: product.categoryId || '',
+            targetGroup: product.targetGroup || ''
+        });
+        setImagePreview(product.imageUrl); 
+        setModalType('edit_product');
+        setShowModal(true);
+    };
+
+    if (loading && !stats) {
+        return <div className="loading-screen"><div className="loader"></div></div>;
+    }
+
+    return (
+        <div className="seller-dashboard-shell">
+            <aside className="dashboard-sidebar">
+                <div className="sidebar-logo" onClick={() => navigate('/')} title="Go to Store">
+                    <img src={logo} alt="Logo" className="logo-image" />
+                </div>
+                <div className="sidebar-brand">Merchant Portal</div>
+                <nav className="sidebar-nav">
+                    <button className={activeTab === 'overview' ? 'active' : ''} onClick={() => setActiveTab('overview')}>Overview</button>
+                    <button className={activeTab === 'inventory' ? 'active' : ''} onClick={() => setActiveTab('inventory')}>Inventory</button>
+                    <button className={activeTab === 'orders' ? 'active' : ''} onClick={() => setActiveTab('orders')}>Orders</button>
+                    <button className={activeTab === 'profile' ? 'active' : ''} onClick={() => setActiveTab('profile')}>Profile</button>
+                    <button className={activeTab === 'settings' ? 'active' : ''} onClick={() => setActiveTab('settings')}>Settings</button>
+                </nav>
+                <div className="sidebar-footer">
+                   <p>{user?.firstName} {user?.lastName}</p>
+                   <small>{profile?.storeName || 'My Store'}</small>
+                   <button className="btn-back-store" onClick={() => navigate('/')}>← Back to Store</button>
+                </div>
+            </aside>
+
+            <main className="dashboard-main">
+                <header className="main-header">
+                    <h2>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</h2>
+                    {activeTab === 'inventory' && (
+                        <button className="btn-primary" onClick={() => { setModalType('add_product'); setProductForm({name:'', description:'', price:'', stock:'', categoryId:''}); setShowModal(true); }}>
+                            Add New Product
+                        </button>
+                    )}
+                </header>
+
+                <div className="tab-content anim-fade-in">
+                    {activeTab === 'overview' && (
+                        stats ? (
+                            <div className="overview-grid">
+                                <div className="metric-box">
+                                    <label>Total Revenue</label>
+                                    <h3>₹{stats.totalRevenue.toLocaleString()}</h3>
+                                </div>
+                                <div className="metric-box">
+                                    <label>Orders</label>
+                                    <h3>{stats.totalOrders}</h3>
+                                </div>
+                                <div className="metric-box">
+                                    <label>Products</label>
+                                    <h3>{stats.activeProducts}</h3>
+                                </div>
+                                <div className="status-chart">
+                                    <h4>Orders by Status</h4>
+                                    <div className="status-bars">
+                                        {Object.entries(stats.ordersByStatus || {}).length > 0 ? (
+                                            Object.entries(stats.ordersByStatus).map(([s, c]) => (
+                                                <div key={s} className="bar-row">
+                                                    <span>{s}</span>
+                                                    <div className="bar-bg"><div className="bar-fill" style={{ width: `${stats.totalOrders > 0 ? (c/stats.totalOrders)*100 : 0}%` }}></div></div>
+                                                    <small>{c}</small>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="empty-text">No status data available.</p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="empty-state-card">
+                                <p>Loading business insights or no data found.</p>
+                            </div>
+                        )
+                    )}
+
+                    {activeTab === 'inventory' && (
+                        <div className="inventory-view">
+                            {inventory.length > 0 ? (
+                                <table className="brutalist-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Price</th>
+                                            <th>Stock</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {inventory.map(p => (
+                                            <tr key={p.id}>
+                                                <td className="product-cell">
+                                                    <img src={p.imageUrl || 'https://via.placeholder.com/50'} alt="" />
+                                                    <div>
+                                                        <strong>{p.name}</strong>
+                                                        <small>{p.categoryName}</small>
+                                                    </div>
+                                                </td>
+                                                <td>₹{p.price}</td>
+                                                <td>{p.stock}</td>
+                                                <td><span className={`badge ${p.active ? 'active' : 'hidden'}`}>{p.active ? 'Active' : 'Hidden'}</span></td>
+                                                <td>
+                                                    <button className="btn-icon" onClick={() => openEditModal(p)}>Edit</button>
+                                                    <button className="btn-icon delete" onClick={() => handleProductDelete(p.id)}>Hide</button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div className="empty-state-card">
+                                    <p>No products in your inventory. Add your first item to start selling!</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {activeTab === 'orders' && (
+                        <div className="orders-view">
+                            <table className="brutalist-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order Info</th>
+                                        <th>Customer</th>
+                                        <th>Quantity</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {orders.map(o => (
+                                        <tr key={o.orderId}>
+                                            <td>#{o.orderId}<br/><small>{o.productTitle}</small></td>
+                                            <td>{o.customerName}<br/><small>{o.shippingAddress}</small></td>
+                                            <td>{o.quantity}</td>
+                                            <td>₹{o.price.toLocaleString()}</td>
+                                            <td>
+                                                <select value={o.status} onChange={(e) => handleStatusUpdate(o.orderId, e.target.value)}>
+                                                    <option value="CREATED">Created</option>
+                                                    <option value="PROCESSING">Processing</option>
+                                                    <option value="SHIPPED">Shipped</option>
+                                                    <option value="DELIVERED">Delivered</option>
+                                                    <option value="CANCELLED">Cancelled</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+
+                    {activeTab === 'profile' && profile && (
+                        <form className="profile-form brutalist-form" onSubmit={handleProfileUpdate}>
+                            <div className="form-group">
+                                <label>Store Name</label>
+                                <input type="text" value={profile.storeName} onChange={(e) => setProfile({...profile, storeName: e.target.value})} />
+                            </div>
+                            <div className="form-group">
+                                <label>Business Bio</label>
+                                <textarea value={profile.bio || ''} onChange={(e) => setProfile({...profile, bio: e.target.value})} placeholder="Tell customers about your store..." />
+                            </div>
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Contact Email</label>
+                                    <input type="email" value={profile.contactEmail || ''} onChange={(e) => setProfile({...profile, contactEmail: e.target.value})} />
+                                </div>
+                                <div className="form-group">
+                                    <label>Contact Phone</label>
+                                    <input type="text" value={profile.contactPhone || ''} onChange={(e) => setProfile({...profile, contactPhone: e.target.value})} />
+                                </div>
+                            </div>
+                            <button type="submit" className="btn-primary">Save Changes</button>
+                        </form>
+                    )}
+
+                    {activeTab === 'settings' && (
+                        <div className="settings-view">
+                            <div className="settings-card brutalist-card">
+                                <h4>Account & Security</h4>
+                                <p>Manage your account settings and merchant preferences.</p>
+                                <button className="btn-secondary" onClick={logout}>Sign Out of Merchant Portrait</button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </main>
+
+            {/* PRODUCT MODAL */}
+            {showModal && (
+                <div className="modal-overlay anim-fade-in">
+                    <div className="modal-content brutalist-card">
+                        <header>
+                            <h3>{modalType === 'add_product' ? 'New Product' : 'Edit Product'}</h3>
+                            <button className="close-btn" onClick={() => setShowModal(false)}>&times;</button>
+                        </header>
+                        <form onSubmit={handleProductSubmit}>
+                            <div className="form-group">
+                                <label>Product Name</label>
+                                <input required type="text" value={productForm.name} onChange={(e) => setProductForm({...productForm, name: e.target.value})} />
+                            </div>
+                            <div className="form-group">
+                                <label>Description</label>
+                                <textarea required value={productForm.description} onChange={(e) => setProductForm({...productForm, description: e.target.value})} />
+                            </div>
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Price (₹)</label>
+                                    <input required type="number" value={productForm.price} onChange={(e) => setProductForm({...productForm, price: e.target.value})} />
+                                </div>
+                                <div className="form-group">
+                                    <label>Stock</label>
+                                    <input required type="number" value={productForm.stock} onChange={(e) => setProductForm({...productForm, stock: e.target.value})} />
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label>Category</label>
+                                <select required value={productForm.categoryId} onChange={(e) => setProductForm({...productForm, categoryId: e.target.value})}>
+                                    <option value="">Select Category</option>
+                                    {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                </select>
+                            </div>
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Min. AI Price (₹) <span className="floor-hint">AI won't go below this</span></label>
+                                    <input 
+                                        type="number" 
+                                        placeholder="e.g. 850" 
+                                        value={productForm.floorPrice} 
+                                        onChange={(e) => setProductForm({...productForm, floorPrice: e.target.value})} 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Target Audience</label>
+                                    <select value={productForm.targetGroup} onChange={(e) => setProductForm({...productForm, targetGroup: e.target.value})}>
+                                        <option value="">Select Audience</option>
+                                        <option value="all">All / Unisex</option>
+                                        <option value="men">Men</option>
+                                        <option value="women">Women</option>
+                                        <option value="boys">Boys</option>
+                                        <option value="girls">Girls</option>
+                                        <option value="kids">Kids (Boys & Girls)</option>
+                                        <option value="children">Children (0–12 yrs)</option>
+                                        <option value="teens">Teens</option>
+                                        <option value="elderly">Elderly</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label>Product Image</label>
+                                <div className="image-upload-wrapper">
+                                    <input 
+                                        type="file" 
+                                        id="product-image-upload" 
+                                        hidden 
+                                        onChange={(e) => {
+                                            const file = e.target.files[0];
+                                            if (file) {
+                                                setProductImage(file);
+                                                setImagePreview(URL.createObjectURL(file));
+                                            }
+                                        }} 
+                                    />
+                                    <label htmlFor="product-image-upload" className="drop-zone">
+                                        {imagePreview ? (
+                                            <div className="image-preview-container">
+                                                <img src={imagePreview} alt="Preview" />
+                                                <div className="change-overlay">Click to change</div>
+                                            </div>
+                                        ) : (
+                                            <div className="upload-placeholder">
+                                                <span className="icon">📸</span>
+                                                <span>Click or Drag to upload product image</span>
+                                            </div>
+                                        )}
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="modal-actions">
+                                <button type="button" onClick={() => setShowModal(false)}>Cancel</button>
+                                <button type="submit" className="btn-primary">
+                                    {modalType === 'add_product' ? 'Create Product' : 'Save Changes'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
-      )}
+    );
+};
 
-      {/* DELETE CONFIRM */}
-      {deleteId && (
-        <div className="modal-overlay">
-          <div className="confirm-card">
-            <h2>Delete Product?</h2>
-            <p>This action cannot be undone. The product will be permanently removed.</p>
-            <div className="modal-actions">
-              <button className="btn-cancel" onClick={() => setDeleteId(null)}>Cancel</button>
-              <button className="btn-delete-confirm" onClick={handleDelete}>Yes, Delete</button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
+export default SellerDashboard;
