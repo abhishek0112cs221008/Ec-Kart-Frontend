@@ -7,6 +7,7 @@ import {
   createCategory, updateCategory, deleteCategory,
   fetchAllUsers
 } from '../../services/adminService'
+import { getApiBaseUrl } from '../../shared/config/api'
 import './AdminDashboard.css'
 
 export default function AdminDashboard() {
@@ -35,7 +36,7 @@ export default function AdminDashboard() {
       const [requests, users, categoriesRes] = await Promise.all([
         fetchPendingSellerRequests(),
         fetchAllUsers(),
-        fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/api/v1/categories`).then(r => r.json())
+        fetch(`${getApiBaseUrl()}/api/v1/categories`).then(r => r.json())
       ])
       setData({ requests, users, categories: categoriesRes })
     } catch (err) {
