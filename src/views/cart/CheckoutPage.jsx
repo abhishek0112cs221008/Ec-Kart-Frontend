@@ -99,8 +99,8 @@ export default function CheckoutPage() {
           }
         },
         prefill: {
-          name: razorpayData.name,
-          email: razorpayData.email,
+          name: razorpayData.name || 'Customer',
+          email: razorpayData.email || '',
           contact: razorpayData.contact || '8888888888',
         },
         theme: {
@@ -109,27 +109,6 @@ export default function CheckoutPage() {
         modal: {
           ondismiss: function() {
             setLoading(false)
-          },
-        },
-        config: {
-          display: {
-            blocks: {
-              banks: {
-                name: 'All Payment Methods',
-                instruments: [
-                  {
-                    method: 'upi',
-                  },
-                  {
-                    method: 'card',
-                  },
-                ],
-              },
-            },
-            sequence: ['block.banks'],
-            preferences: {
-              show_default_blocks: true,
-            },
           },
         },
       }
