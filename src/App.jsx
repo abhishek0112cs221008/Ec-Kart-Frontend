@@ -21,6 +21,7 @@ import PaymentCancelPage from './views/cart/PaymentCancelPage'
 import OrdersPage from './views/orders/OrdersPage'
 import OrderDetailsPage from './views/orders/OrderDetailsPage'
 import PrivacyPolicyPage from './views/legal/PrivacyPolicyPage'
+import BottomNavigation from './components/BottomNavigation'
 import './App.css'
 
 function App() {
@@ -114,6 +115,7 @@ function App() {
                 element={<PrivacyPolicyPage />}
               />
             </Routes>
+            <BottomNavigation />
           </WishlistProvider>
         </CartProvider>
       </AuthProvider>
