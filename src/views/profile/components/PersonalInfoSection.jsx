@@ -13,7 +13,7 @@ export default function PersonalInfoSection({ user, refreshUser, setAlert }) {
     e.preventDefault()
     setLoading(true)
     try {
-      await updateProfile(formData.firstName, formData.lastName, formData.phoneNumber)
+      await updateProfile(formData.firstName, formData.lastName, formData.phoneNumber, null)
       await refreshUser()
       setAlert({ type: 'success', msg: 'Personal information updated!' })
     } catch (err) {

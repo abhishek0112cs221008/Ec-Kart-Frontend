@@ -24,6 +24,9 @@ import PrivacyPolicyPage from './views/legal/PrivacyPolicyPage'
 import BottomNavigation from './components/BottomNavigation'
 import './App.css'
 
+import ForgotPasswordPage from './views/auth/ForgotPasswordPage'
+import ResetPasswordPage from './views/auth/ResetPasswordPage'
+
 function App() {
   return (
     <BrowserRouter>
@@ -34,6 +37,8 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route
                 path="/seller/dashboard"
                 element={

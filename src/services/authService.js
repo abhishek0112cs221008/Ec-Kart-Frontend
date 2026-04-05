@@ -40,11 +40,12 @@ export async function fetchCurrentUser() {
   if (!res.ok) throw new Error('Failed to fetch user profile')
   return res.json()
 }
-export async function updateProfile(firstName, lastName, file) {
+export async function updateProfile(firstName, lastName, phoneNumber, file) {
   const token = localStorage.getItem('eckart_token')
   const formData = new FormData()
   if (firstName) formData.append('firstName', firstName)
   if (lastName) formData.append('lastName', lastName)
+  if (phoneNumber) formData.append('phoneNumber', phoneNumber)
   if (file) formData.append('file', file)
 
   const res = await fetch(`${BASE}/api/v1/auth/update-profile`, {
@@ -57,5 +58,27 @@ export async function updateProfile(firstName, lastName, file) {
 
   const data = await res.json()
   if (!res.ok) throw new Error(data.message || 'Failed to update profile')
+  return data
+}
+
+export async function forgotPassword(email) {
+  const res = await fetch(`${BASE}/api/v1/auth/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.message || 'Forgot password request failed')
+  return data
+}
+
+export async function resetPassword({ email, otp, newPassword }) {
+  const res = await fetch(`${BASE}/api/v1/auth/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, otp, newPassword }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.message || 'Reset password failed')
   return data
 }

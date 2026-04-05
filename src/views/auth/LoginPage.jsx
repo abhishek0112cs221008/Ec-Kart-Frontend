@@ -110,7 +110,9 @@ export default function LoginPage() {
             <div className="form-group">
               <label htmlFor="password">
                 Password
-                <Link to="/forgot-password" style={{ marginLeft: 'auto', fontSize: '0.8rem', color: 'var(--clr-primary)' }}>Forgot password?</Link>
+                <Link to="/forgot-password" style={{ color: "var(--auth-accent-primary)", fontSize: "0.8rem", textTransform: "none", fontWeight: "600" }}>
+                  Forgot?
+                </Link>
               </label>
               <div className="input-wrapper">
                 <svg className="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
