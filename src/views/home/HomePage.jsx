@@ -29,13 +29,20 @@ const BANNERS = [
 ]
 
 const CATEGORIES = [
+  { name: 'For You', icon: '👜' },
+  { name: 'Fashion', icon: '👕' },
   { name: 'Mobiles', icon: '📱' },
-  { name: 'Fashion', icon: '👔' },
+  { name: 'Beauty', icon: '🧴' },
   { name: 'Electronics', icon: '💻' },
   { name: 'Home', icon: '🏠' },
-  { name: 'Travel', icon: '✈️' },
-  { name: 'Appliances', icon: '🧺' },
-  { name: 'Beauty', icon: '💄' }
+  { name: 'Appliances', icon: '📺' },
+  { name: 'Toys, ba...', icon: '🧸' },
+  { name: 'Food & H...', icon: '🥫' },
+  { name: 'Auto Acc...', icon: '🚕' },
+  { name: '2 Wheele...', icon: '🛵' },
+  { name: 'Sports & ...', icon: '🏏' },
+  { name: 'Books & ...', icon: '📚' },
+  { name: 'Furniture', icon: '🪑' }
 ]
 
 function CategoryBar() {
@@ -123,43 +130,56 @@ function HeroCarousel() {
   )
 }
 
-function FilteredProductSection({ spotlightDeals, featuredProducts }) {
-  const [activeTab, setActiveTab] = useState('Trending')
-  
-  const getFilteredItems = () => {
-    switch(activeTab) {
-      case 'Trending': return spotlightDeals.slice(0, 4)
-      case 'Newest': return featuredProducts.slice(0, 4)
-      case 'Recommended': return featuredProducts.slice(4, 8)
-      default: return featuredProducts.slice(0, 4)
-    }
-  }
-
-  const tabs = ['Trending', 'Newest', 'Recommended']
-  const items = getFilteredItems()
-
+function Pagination() {
   return (
-    <section className="filtered-items-section">
-      <div className="filtered-header">
-        <div className="tabs-list">
-          {tabs.map(tab => (
-            <button 
-              key={tab} 
-              className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
+    <div className="pagination-container">
+      <div className="pagination-inner">
+        <div className="page-numbers">
+          <span className="page-num active">1</span>
+          <span className="page-num">2</span>
+          <span className="page-num">3</span>
+          <span className="page-num">...</span>
+          <span className="page-num">n</span>
+        </div>
+        <div className="page-arrows">
+          <button className="square-arrow-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>
+            </svg>
+          </button>
+          <button className="square-arrow-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+            </svg>
+          </button>
         </div>
       </div>
-      <div className="deal-grid">
-         {items.length > 0 ? items.map(product => (
-           <ProductCard key={product.id} product={product} />
-         )) : (
-           <div className="empty-filter">No products in this collection currently.</div>
-         )}
+    </div>
+  )
+}
+
+function ProductGridSection({ products, isLoading }) {
+  // Ensure we show 6 items for the 3x2 grid, placeholders if loading or few products
+  const displayProducts = isLoading 
+    ? Array(6).fill(null) 
+    : [...products, ...Array(6)].slice(0, 6)
+
+  return (
+    <section className="product-grid-refined">
+      <div className="grid-container-3x2">
+        {displayProducts.map((product, idx) => (
+          <div key={product?.id || idx} className="product-card-wrapper-refined">
+            {product ? (
+              <ProductCard product={product} />
+            ) : (
+              <div className="product-placeholder-card">
+                <div className="gray-box"></div>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
+      <Pagination />
     </section>
   )
 }
@@ -217,31 +237,11 @@ function HomePage() {
           <div className="error-banner">Backend connection failed. Cannot load live products.</div>
         )}
 
-        {/* 5. ITEMS NOT ALL ONLY FEW WITH FILTERING */}
-        {!isLoading && (
-          <FilteredProductSection 
-            spotlightDeals={spotlightDeals} 
-            featuredProducts={featuredProducts} 
-          />
-        )}
-
-        {/* LOADING STATES */}
-        {isLoading && Array(2).fill(0).map((_, i) => (
-          <div key={i} className="skeleton-section-home">
-            <div className="skeleton h-heading"></div>
-            <div className="skeleton-row-home">
-               {[1,2,3,4].map(j => <div key={j} className="skeleton h-card"></div>)}
-            </div>
-          </div>
-        ))}
+        <ProductGridSection products={featuredProducts} isLoading={isLoading} />
 
         {/* BRAND SIGNATURE BEFORE FOOTER */}
-        <div className="brand-signature">
-           <img src={logo} alt="Ec-Kart Logo" className="signature-logo" />
-           <p className="signature-text">Premium Shopping Simplified</p>
-           <Link to="/shop" className="btn-signature" style={{ marginTop: '2rem' }}>
-              Shop All Collection
-           </Link>
+        <div className="brand-signature-large">
+           <img src={logo} alt="Ec-Kart Logo" className="large-logo" />
         </div>
       </main>
 
