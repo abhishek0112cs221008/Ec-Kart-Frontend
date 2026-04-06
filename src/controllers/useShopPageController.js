@@ -17,12 +17,18 @@ export function useShopPageController() {
   const [sortBy, setSortBy] = useState('newest')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
 
-  // Sync Search from URL
+  // Sync Filters from URL
   useEffect(() => {
     const params = new URLSearchParams(location.search)
+    
     const q = params.get('search')
     if (q !== null) {
       setSearchQuery(q)
+    }
+
+    const cat = params.get('category')
+    if (cat !== null) {
+      setActiveCategory(cat)
     }
   }, [location.search])
 

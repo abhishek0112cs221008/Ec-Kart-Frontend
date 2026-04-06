@@ -28,37 +28,6 @@ const BANNERS = [
   }
 ]
 
-const CATEGORIES = [
-  { name: 'For You', icon: '👜' },
-  { name: 'Fashion', icon: '👕' },
-  { name: 'Mobiles', icon: '📱' },
-  { name: 'Beauty', icon: '🧴' },
-  { name: 'Electronics', icon: '💻' },
-  { name: 'Home', icon: '🏠' },
-  { name: 'Appliances', icon: '📺' },
-  { name: 'Toys, ba...', icon: '🧸' },
-  { name: 'Food & H...', icon: '🥫' },
-  { name: 'Auto Acc...', icon: '🚕' },
-  { name: '2 Wheele...', icon: '🛵' },
-  { name: 'Sports & ...', icon: '🏏' },
-  { name: 'Books & ...', icon: '📚' },
-  { name: 'Furniture', icon: '🪑' }
-]
-
-function CategoryBar() {
-  return (
-    <div className="category-bar">
-      <div className="category-bar-inner">
-        {CATEGORIES.map(cat => (
-          <Link key={cat.name} to={`/shop?category=${cat.name}`} className="category-item">
-            <div className="cat-icon-circle">{cat.icon}</div>
-            <span>{cat.name}</span>
-          </Link>
-        ))}
-      </div>
-    </div>
-  )
-}
 
 function FannedCard({ product, index, total }) {
   const middle = Math.floor(total / 2)
@@ -158,28 +127,33 @@ function Pagination() {
   )
 }
 
-function ProductGridSection({ products, isLoading }) {
-  // Ensure we show 6 items for the 3x2 grid, placeholders if loading or few products
+function FeaturedProductsSection({ products, isLoading }) {
+  // Only show existing products, up to 8
   const displayProducts = isLoading 
-    ? Array(6).fill(null) 
-    : [...products, ...Array(6)].slice(0, 6)
+    ? Array(8).fill(null) 
+    : products.slice(0, 8)
+
+  if (!isLoading && displayProducts.length === 0) return null
 
   return (
-    <section className="product-grid-refined">
-      <div className="grid-container-3x2">
+    <section className="featured-products-section">
+      <div className="section-head">
+        <h2>Featured Products</h2>
+        <Link to="/shop" className="view-all">View All</Link>
+      </div>
+      <div className="grid-container-4col">
         {displayProducts.map((product, idx) => (
           <div key={product?.id || idx} className="product-card-wrapper-refined">
             {product ? (
               <ProductCard product={product} />
             ) : (
               <div className="product-placeholder-card">
-                <div className="gray-box"></div>
+                <div className="gray-box" style={{ background: 'var(--clr-primary-light)', opacity: 0.3 }}></div>
               </div>
             )}
           </div>
         ))}
       </div>
-      <Pagination />
     </section>
   )
 }
@@ -223,21 +197,12 @@ function HomePage() {
           </Link>
         </div>
       </section>
-
-      {/* 3. CATEGORIES ICONS */}
-      <CategoryBar />
-
-      {/* 4. NEW HERO SECTION */}
-      <section className="hero-section-new" style={{ marginTop: '2rem' }}>
-        <HeroCarousel />
-      </section>
-
       <main className="pallet-main">
         {isError && (
           <div className="error-banner">Backend connection failed. Cannot load live products.</div>
         )}
 
-        <ProductGridSection products={featuredProducts} isLoading={isLoading} />
+        <FeaturedProductsSection products={featuredProducts} isLoading={isLoading} />
 
         {/* BRAND SIGNATURE BEFORE FOOTER */}
         <div className="brand-signature-large">
