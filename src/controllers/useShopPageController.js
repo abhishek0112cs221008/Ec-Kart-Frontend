@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 import { getJson } from '../shared/lib/httpClient'
+import { searchProductsByQuery, searchProductsByCategory, fetchAllProducts } from '../services/productService'
 
 export function useShopPageController() {
   const [allProducts, setAllProducts] = useState([])
@@ -32,12 +33,13 @@ export function useShopPageController() {
     }
   }, [location.search])
 
+  // Load initial data
   useEffect(() => {
     async function loadShopData() {
       setStatus('loading')
       try {
         const [productsData, categoriesData] = await Promise.all([
-          getJson('/api/v1/products'),
+          fetchAllProducts(),
           getJson('/api/v1/categories')
         ])
         setAllProducts(productsData)
@@ -52,12 +54,56 @@ export function useShopPageController() {
     loadShopData()
   }, [])
 
+  // Elasticsearch search effect
+  const [searchResults, setSearchResults] = useState(null)
+  const [searchStatus, setSearchStatus] = useState('idle')
+
+  useEffect(() => {
+    async function performSearch() {
+      // No search or category filter
+      if (!searchQuery.trim() && activeCategory === 'All') {
+        setSearchResults(null)
+        setSearchStatus('idle')
+        return
+      }
+
+      setSearchStatus('loading')
+      try {
+        let results = []
+
+        // If there's a search query, use Elasticsearch search
+        if (searchQuery.trim()) {
+          results = await searchProductsByQuery(searchQuery)
+        } 
+        // If there's a category filter, use the category search
+        else if (activeCategory !== 'All') {
+          const categoryId = categories.find(cat => cat.name === activeCategory)?.id
+          if (categoryId) {
+            results = await searchProductsByCategory(categoryId)
+          }
+        }
+
+        setSearchResults(results)
+        setSearchStatus('success')
+      } catch (err) {
+        console.error('Search error:', err)
+        setSearchStatus('error')
+      }
+    }
+
+    performSearch()
+  }, [searchQuery, activeCategory, categories])
+
   const filteredProducts = useMemo(() => {
-    return allProducts
+    let products = searchResults !== null ? searchResults : allProducts
+
+    // Apply filters
+    return products
       .filter(product => {
         const matchesCategory = activeCategory === 'All' || product.categoryName === activeCategory
         const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
-        const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase())
+        // Search filter is already applied by Elasticsearch if searchResults is not null
+        const matchesSearch = searchResults !== null ? true : product.name.toLowerCase().includes(searchQuery.toLowerCase())
         return matchesCategory && matchesPrice && matchesSearch
       })
       .sort((a, b) => {
@@ -66,7 +112,7 @@ export function useShopPageController() {
         if (sortBy === 'name') return a.name.localeCompare(b.name)
         return new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
       })
-  }, [allProducts, activeCategory, priceRange, searchQuery, sortBy])
+  }, [allProducts, searchResults, activeCategory, priceRange, searchQuery, sortBy])
 
   const toggleFilter = () => setIsFilterOpen(!isFilterOpen)
   
@@ -77,11 +123,14 @@ export function useShopPageController() {
     setSortBy('newest')
   }
 
+  const isLoading = status === 'loading' || searchStatus === 'loading'
+
   return {
     filteredProducts,
     categories,
     status,
     error,
+    isSearching: searchStatus === 'loading',
     filters: {
       activeCategory,
       setActiveCategory,

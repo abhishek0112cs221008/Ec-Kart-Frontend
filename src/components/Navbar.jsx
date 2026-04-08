@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
+import SearchSuggestions from './SearchSuggestions'
 import logo from '../assets/logo.png'
 
 export default function Navbar() {
@@ -14,6 +15,8 @@ export default function Navbar() {
 
   const [searchQuery, setSearchQuery] = useState('')
   const [categories, setCategories] = useState([])
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const searchRef = useRef(null)
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/api/v1/categories`)
@@ -25,10 +28,34 @@ export default function Navbar() {
       .catch(err => console.error('Failed to fetch categories:', err))
   }, [])
 
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSuggestions(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
   const handleSearchSubmit = (e) => {
     e.preventDefault()
     if (!searchQuery.trim()) return
     navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`)
+    setSearchQuery('')
+    setShowSuggestions(false)
+  }
+
+  const handleSearchInputChange = (e) => {
+    const value = e.target.value
+    setSearchQuery(value)
+    setShowSuggestions(value.trim().length > 0)
+  }
+
+  const closeSuggestions = () => {
+    setShowSuggestions(false)
     setSearchQuery('')
   }
 
@@ -81,17 +108,26 @@ export default function Navbar() {
         </nav>
 
         {/* Integrated Search Bar */}
-        <form className="header-search-form" onSubmit={handleSearchSubmit}>
-          <input 
-            type="text" 
-            placeholder="Search products..." 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="header-search-input"
-          />
-          <button type="submit" className="search-btn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
-          </button>
+        <form className="header-search-form" onSubmit={handleSearchSubmit} ref={searchRef}>
+          <div className="search-input-wrapper">
+            <input 
+              type="text" 
+              placeholder="Search products..." 
+              value={searchQuery}
+              onChange={handleSearchInputChange}
+              onFocus={() => searchQuery.trim().length > 0 && setShowSuggestions(true)}
+              className="header-search-input"
+            />
+            <button type="submit" className="search-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+            </button>
+            {showSuggestions && (
+              <SearchSuggestions 
+                query={searchQuery} 
+                onClose={closeSuggestions}
+              />
+            )}
+          </div>
         </form>
       </div>
 

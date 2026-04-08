@@ -1,0 +1,250 @@
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: -1.25rem;
+  right: -0.5rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1002;
+  max-height: 500px;
+  overflow-y: auto;
+  min-width: 300px;
+  width: calc(100% + 1.75rem);
+}
+
+/* Scrollbar styling */
+.search-suggestions::-webkit-scrollbar {
+  width: 6px;
+}
+
+.search-suggestions::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.search-suggestions::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.search-suggestions::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Loading state */
+.suggestions-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  color: #666;
+  font-size: 14px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #f0f0f0;
+  border-top: 2px solid #ff6b35;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Suggestions list */
+.suggestions-list {
+  padding: 8px 0;
+}
+
+.suggestion-item {
+  display: flex;
+  gap: 12px;
+  padding: 8px 12px;
+  cursor: pointer;
+  align-items: center;
+  transition: background-color 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.suggestion-item:hover,
+.suggestion-item.highlighted {
+  background-color: #f5f5f5;
+  border-left-color: #ff6b35;
+}
+
+.suggestion-image {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.suggestion-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.no-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #999;
+  background: #f0f0f0;
+}
+
+.suggestion-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.suggestion-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 4px;
+}
+
+.suggestion-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.suggestion-category {
+  color: #666;
+  padding: 2px 6px;
+  background: #f0f0f0;
+  border-radius: 3px;
+}
+
+.suggestion-price {
+  font-weight: 600;
+  color: #ff6b35;
+}
+
+.suggestion-rating {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.stars {
+  color: #ffc107;
+}
+
+.rating-value {
+  color: #666;
+}
+
+.suggestion-arrow {
+  flex-shrink: 0;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.suggestion-item:hover .suggestion-arrow,
+.suggestion-item.highlighted .suggestion-arrow {
+  opacity: 1;
+  color: #ff6b35;
+}
+
+/* View all results link */
+.suggestions-view-all {
+  display: block;
+  padding: 12px 16px;
+  text-align: center;
+  color: #ff6b35;
+  font-weight: 600;
+  border-top: 1px solid #f0f0f0;
+  text-decoration: none;
+  font-size: 13px;
+  transition: background-color 0.2s ease;
+}
+
+.suggestions-view-all:hover {
+  background-color: #fff8f5;
+}
+
+/* Empty state */
+.suggestions-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 32px 16px;
+  text-align: center;
+  color: #999;
+}
+
+.suggestions-empty svg {
+  opacity: 0.5;
+}
+
+.suggestions-empty p {
+  font-size: 14px;
+  margin: 0;
+}
+
+.suggestions-search-link {
+  color: #ff6b35;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 13px;
+  transition: opacity 0.2s ease;
+}
+
+.suggestions-search-link:hover {
+  opacity: 0.8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-suggestions {
+    min-width: 280px;
+    max-height: 400px;
+  }
+
+  .suggestion-item {
+    padding: 10px 8px;
+  }
+
+  .suggestion-image {
+    width: 48px;
+    height: 48px;
+  }
+
+  .suggestion-name {
+    font-size: 13px;
+  }
+
+  .suggestion-meta {
+    font-size: 11px;
+  }
+}
