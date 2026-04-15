@@ -68,24 +68,27 @@ export default function Navbar() {
 
   return (
     <header className={`pallet-header ${isMenuOpen ? 'menu-open' : ''}`}>
-      <Link to="/" className="brand">
-        <img src={logo} alt="Ec-Kart Logo" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
-        <span className="brand-name">Ec-Kart</span>
-      </Link>
+      {/* Mobile Toggle & Brand (Desktop/Mobile Dual Role) */}
+      <div className="header-left">
+        <button className="mobile-menu-toggle" onClick={toggleMenu} aria-label="Toggle Menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {isMenuOpen ? (
+              <path d="M18 6L6 18M6 6l12 12" />
+            ) : (
+              <path d="M3 12h18M3 6h18M3 18h18" />
+            )}
+          </svg>
+        </button>
+        
+        <Link to="/" className="brand desktop-only" onClick={() => setIsMenuOpen(false)}>
+          <img src={logo} alt="Ec-Kart Logo" className="brand-img" />
+          <span className="brand-name">Ec-Kart</span>
+        </Link>
+      </div>
 
-      {/* Hamburger Button for Mobile */}
-      <button className="mobile-menu-toggle" onClick={toggleMenu} aria-label="Toggle Menu">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          {isMenuOpen ? (
-            <path d="M18 6L6 18M6 6l12 12" />
-          ) : (
-            <path d="M3 12h18M3 6h18M3 18h18" />
-          )}
-        </svg>
-      </button>
-
-      <div className={`header-center ${isMenuOpen ? 'show' : ''}`}>
-        <nav className="header-links">
+      {/* Main Center Area: Desktop Nav + Universal Search */}
+      <div className="header-center-area">
+        <nav className="header-links desktop-only">
           <Link to="/" className={location.pathname === '/' ? 'active' : ''}>Home</Link>
           <Link to="/shop" className={location.pathname === '/shop' ? 'active' : ''}>Shop</Link>
           
@@ -125,7 +128,6 @@ export default function Navbar() {
           </div>
         </nav>
 
-        {/* Integrated Search Bar */}
         <form className="header-search-form" onSubmit={handleSearchSubmit} ref={searchRef}>
           <div className="search-input-wrapper">
             <input 
@@ -149,60 +151,141 @@ export default function Navbar() {
         </form>
       </div>
 
-      <div className={`header-actions ${isMenuOpen ? 'show' : ''}`}>
-        {/* Wishlist */}
-        <Link to="/wishlist" className="action-icon wishlist-btn" title="Wishlist">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-          </svg>
-          {wishlistCount > 0 && <span className="icon-count">{wishlistCount}</span>}
-        </Link>
-
-        {/* Cart */}
-        <Link to="/cart" className="action-icon cart-btn" title="Shopping Cart">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
-          </svg>
-          {cartCount > 0 && <span className="icon-count">{cartCount}</span>}
-        </Link>
-
-        <div className="v-separator" />
-        
-        {/* Theme Toggle */}
-        <button 
-          className="action-icon theme-toggle-btn" 
-          onClick={toggleTheme} 
-          title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
-        >
-          {theme === 'light' ? (
+      {/* Desktop/Mobile Common Actions */}
+      <div className="header-right">
+        <div className="header-actions desktop-only">
+          <Link to="/wishlist" className="action-icon wishlist-btn" title="Wishlist">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
-          ) : (
+            {wishlistCount > 0 && <span className="icon-count">{wishlistCount}</span>}
+          </Link>
+
+          <Link to="/cart" className="action-icon cart-btn" title="Shopping Cart">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
             </svg>
-          )}
-        </button>
+            {cartCount > 0 && <span className="icon-count">{cartCount}</span>}
+          </Link>
 
-        <div className="v-separator" />
-
-        {/* Profile */}
-        <Link to="/profile" className="action-icon profile-btn" title="My Account">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-          </svg>
-        </Link>
-
-
-        {/* Logout */}
-        {isLoggedIn && (
-          <button className="action-icon logout-btn" onClick={() => { logout(); navigate('/') }} title="Logout">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
+          <div className="v-separator" />
+          
+          <button className="action-icon theme-toggle-btn" onClick={toggleTheme} title="Toggle Theme">
+            {theme === 'light' ? (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+            ) : (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><path d="M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" /></svg>
+            )}
           </button>
-        )}
+
+          <div className="v-separator" />
+
+          <Link to="/profile" className="action-icon profile-btn" title="My Account">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </Link>
+
+          {isLoggedIn && (
+            <button className="action-icon logout-btn" onClick={() => { logout(); navigate('/') }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </button>
+          )}
+        </div>
+
+        {/* No action icons on mobile header as per user request */}
+      </div>
+
+      {/* Side Slider Menu (Modern Drawer) */}
+      <div className={`side-drawer-overlay ${isMenuOpen ? 'open' : ''}`} onClick={() => setIsMenuOpen(false)} />
+      
+      <div className={`side-drawer ${isMenuOpen ? 'open' : ''}`}>
+        <div className="drawer-header">
+          <div className="brand drawer-brand">
+            <img src={logo} alt="Logo" className="brand-img" />
+            <span className="brand-name">Ec-Kart</span>
+          </div>
+          <button className="close-drawer" onClick={() => setIsMenuOpen(false)}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <div className="drawer-body">
+          <div className="drawer-section">
+            <h4>Menu</h4>
+            <div className="drawer-nav">
+              <Link to="/" onClick={() => setIsMenuOpen(false)}>
+                <div className="link-with-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                  Home
+                </div>
+              </Link>
+              <Link to="/shop" onClick={() => setIsMenuOpen(false)}>
+                <div className="link-with-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                  Shop
+                </div>
+              </Link>
+              <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
+                <div className="link-with-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  My Account
+                </div>
+              </Link>
+              <Link to="/wishlist" onClick={() => setIsMenuOpen(false)}>
+                <div className="link-with-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                  Wishlist
+                </div>
+                {wishlistCount > 0 && <span className="drawer-badge">{wishlistCount}</span>}
+              </Link>
+              <Link to="/cart" onClick={() => setIsMenuOpen(false)}>
+                <div className="link-with-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                  My Cart
+                </div>
+                {cartCount > 0 && <span className="drawer-badge">{cartCount}</span>}
+              </Link>
+            </div>
+          </div>
+
+          <div className="drawer-section">
+            <h4>Collections</h4>
+            <div className="drawer-categories">
+              {categories.slice(0, 8).map(cat => (
+                <Link key={cat.id} to={`/shop?category=${cat.name}`} className="category-pill-link" onClick={() => setIsMenuOpen(false)}>
+                  {cat.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="drawer-section theme-section-modern">
+            <div className="theme-toggle-modern" onClick={toggleTheme}>
+              <div className="theme-info">
+                <div className="theme-icon">
+                  {theme === 'light' ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                  )}
+                </div>
+                <span>Theme Mode</span>
+              </div>
+              <div className="theme-switch-status">{theme}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="drawer-footer">
+          {isLoggedIn ? (
+            <button className="drawer-logout-btn" onClick={() => { logout(); setIsMenuOpen(false); navigate('/') }}>
+              Sign Out
+            </button>
+          ) : (
+            <Link to="/login" className="drawer-login-btn" onClick={() => setIsMenuOpen(false)}>
+              Sign In
+            </Link>
+          )}
+        </div>
       </div>
     </header>
   )
