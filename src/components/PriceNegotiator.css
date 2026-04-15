@@ -15,9 +15,9 @@
 .negotiator-modal {
     width: 480px;
     height: 600px;
-    background: #ffffff;
+    background: var(--clr-surface-solid);
     border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    box-shadow: var(--shadow-lg);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -80,12 +80,12 @@
     flex-direction: column;
     padding: 1rem;
     overflow-y: auto;
-    background: #f8fafc;
+    background: var(--clr-bg);
 }
 
 .product-mini-card {
-    background: #fff;
-    border: 1px solid #e2e8f0;
+    background: var(--clr-surface-solid);
+    border: 1px solid var(--clr-border);
     border-radius: 12px;
     padding: 0.75rem;
     display: flex;
@@ -110,7 +110,7 @@
 .mini-name {
     font-size: 0.85rem;
     font-weight: 700;
-    color: #334155;
+    color: var(--clr-text);
 }
 
 .mini-price {
@@ -137,16 +137,14 @@
   max-width: 480px;
   height: 85vh;
   max-height: 750px;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--clr-surface);
   backdrop-filter: blur(25px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid var(--clr-border);
   border-radius: 28px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.2),
-    inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  box-shadow: var(--shadow-lg);
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -158,8 +156,8 @@
 /* Header */
 .nego-glass-header {
   padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.3);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background: var(--clr-border);
+  border-bottom: 1px solid var(--clr-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -199,14 +197,14 @@
 .nego-titles h3 {
   font-size: 1.1rem;
   font-weight: 800;
-  color: #1e293b;
+  color: var(--clr-text);
   margin: 0;
   letter-spacing: -0.02em;
 }
 
 .nego-status {
   font-size: 0.75rem;
-  color: #64748b;
+  color: var(--clr-text-muted);
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -251,8 +249,8 @@
 
 .nego-product-context {
   margin: 0 1.5rem 1.5rem;
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: var(--clr-surface-solid);
+  border: 1px solid var(--clr-border);
   border-radius: 18px;
   padding: 0.75rem;
   display: flex;
@@ -270,7 +268,7 @@
 .context-name {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--clr-text);
   margin: 0;
 }
 
@@ -283,14 +281,14 @@
 
 .listed-label {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--clr-text-muted);
   text-decoration: line-through;
 }
 
 .offered-label {
   font-size: 0.85rem;
   font-weight: 900;
-  color: #000;
+  color: var(--clr-primary);
 }
 
 /* Messages */
@@ -326,12 +324,12 @@
   font-size: 0.95rem;
   line-height: 1.5;
   border-radius: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-md);
 }
 
 .assistant .nego-bubble {
-  background: #fff;
-  color: #334155;
+  background: var(--clr-surface-solid);
+  color: var(--clr-text);
   border-bottom-left-radius: 4px;
 }
 
@@ -346,7 +344,7 @@
   display: flex;
   gap: 4px;
   padding: 0.85rem 1.1rem;
-  background: #fff;
+  background: var(--clr-surface-solid);
   border-radius: 20px;
   width: fit-content;
 }
@@ -370,8 +368,8 @@
 /* Footer & Actions */
 .nego-glass-footer {
   padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.3);
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  background: var(--clr-surface);
+  border-top: 1px solid var(--clr-border);
 }
 
 .nego-shortcuts {
@@ -388,13 +386,13 @@
 }
 
 .glass-chip {
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: var(--clr-border);
+  border: 1px solid var(--clr-border);
   padding: 0.5rem 0.85rem;
   border-radius: 12px;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #475569;
+  color: var(--clr-text-muted);
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -414,11 +412,11 @@
 .nego-input-area {
   display: flex;
   gap: 0.75rem;
-  background: #fff;
+  background: var(--clr-surface-solid);
   padding: 0.5rem;
   border-radius: 18px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--clr-border);
+  box-shadow: var(--shadow-sm);
 }
 
 .nego-input-area input {
@@ -427,7 +425,7 @@
   background: none;
   padding: 0.5rem 0.75rem;
   font-size: 0.95rem;
-  color: #1e293b;
+  color: var(--clr-text);
   outline: none;
 }
 

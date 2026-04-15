@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
+import { ThemeProvider } from './context/ThemeContext'
 import { CartProvider } from './context/CartContext'
 import { WishlistProvider } from './context/WishlistContext'
 import HomePage from './views/home/HomePage'
@@ -29,99 +30,101 @@ import ResetPasswordPage from './views/auth/ResetPasswordPage'
 function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <CartProvider>
-          <WishlistProvider>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-              <Route path="/reset-password" element={<ResetPasswordPage />} />
-              <Route
-                path="/seller/dashboard"
-                element={
-                  <ProtectedRoute role="ROLE_SELLER">
-                    <SellerDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/dashboard"
-                element={
-                  <ProtectedRoute role="ROLE_ADMIN">
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/product/:id" element={<ProductDetailPage />} />
-              <Route path="/shop" element={<ShopPage />} />
-              <Route path="/categories" element={<CategoriesPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute>
-                    <ProfilePage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/cart"
-                element={
-                  <ProtectedRoute>
-                    <CartPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/checkout"
-                element={
-                  <ProtectedRoute>
-                    <CheckoutPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/payment/success"
-                element={<PaymentSuccessPage />}
-              />
-              <Route
-                path="/payment/cancel"
-                element={<PaymentCancelPage />}
-              />
-              <Route
-                path="/wishlist"
-                element={
-                  <ProtectedRoute>
-                    <WishlistPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/orders"
-                element={
-                  <ProtectedRoute>
-                    <OrdersPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/orders/:id"
-                element={
-                  <ProtectedRoute>
-                    <OrderDetailsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/privacy-policy"
-                element={<PrivacyPolicyPage />}
-              />
-            </Routes>
-          </WishlistProvider>
-        </CartProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
+                <Route
+                  path="/seller/dashboard"
+                  element={
+                    <ProtectedRoute role="ROLE_SELLER">
+                      <SellerDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/dashboard"
+                  element={
+                    <ProtectedRoute role="ROLE_ADMIN">
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/product/:id" element={<ProductDetailPage />} />
+                <Route path="/shop" element={<ShopPage />} />
+                <Route path="/categories" element={<CategoriesPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <ProfilePage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/cart"
+                  element={
+                    <ProtectedRoute>
+                      <CartPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/checkout"
+                  element={
+                    <ProtectedRoute>
+                      <CheckoutPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/payment/success"
+                  element={<PaymentSuccessPage />}
+                />
+                <Route
+                  path="/payment/cancel"
+                  element={<PaymentCancelPage />}
+                />
+                <Route
+                  path="/wishlist"
+                  element={
+                    <ProtectedRoute>
+                      <WishlistPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/orders"
+                  element={
+                    <ProtectedRoute>
+                      <OrdersPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/orders/:id"
+                  element={
+                    <ProtectedRoute>
+                      <OrderDetailsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/privacy-policy"
+                  element={<PrivacyPolicyPage />}
+                />
+              </Routes>
+            </WishlistProvider>
+          </CartProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   )
 }
