@@ -205,9 +205,6 @@ function HomePage() {
         <FeaturedProductsSection products={featuredProducts} isLoading={isLoading} />
 
         {/* BRAND SIGNATURE BEFORE FOOTER */}
-        <div className="brand-signature-large">
-           <img src={logo} alt="Ec-Kart Logo" className="large-logo" />
-        </div>
       </main>
 
       <Footer />

@@ -81,11 +81,11 @@ export default function AddressSection({ setAlert }) {
   if (loading) return <div className="loader"></div>
 
   return (
-    <div className="profile-section-content">
+    <div className="profile-section-content animate-fadeIn">
       <div className="section-header">
-        <h2>Manage Addresses</h2>
+        <h2>Destinations</h2>
         <button className="add-addr-btn" onClick={() => setShowForm(!showForm)}>
-          {showForm ? 'Cancel' : '+ ADD A NEW ADDRESS'}
+          {showForm ? 'Discard' : 'New Destination'}
         </button>
       </div>
 

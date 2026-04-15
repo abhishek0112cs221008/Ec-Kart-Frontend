@@ -43,22 +43,14 @@ export default function ProfilePage() {
       <main className="profile-page-main">
         <div className="profile-header">
           <div className="header-content">
-            <div className="breadcrumb-section">
-              <nav className="breadcrumb">
-                <Link to="/" className="breadcrumb-link">Home</Link>
-                <span className="breadcrumb-separator">/</span>
-                <span className="breadcrumb-current">My Account</span>
-              </nav>
-            </div>
             <div className="header-title">
+              <nav className="breadcrumb">
+                <Link to="/">Home</Link> <span>/</span> <span className="active">My Account</span>
+              </nav>
               <h1>My Account</h1>
-              <p>Manage your profile and preferences</p>
+              <p>Tailored settings for your unique profile.</p>
             </div>
             <Link to="/shop" className="back-button">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="19" y1="12" x2="5" y2="12"/>
-                <polyline points="12 19 5 12 12 5"/>
-              </svg>
               Continue Shopping
             </Link>
           </div>

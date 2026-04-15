@@ -16,6 +16,7 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('')
   const [categories, setCategories] = useState([])
   const [showSuggestions, setShowSuggestions] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const searchRef = useRef(null)
 
   useEffect(() => {
@@ -59,14 +60,29 @@ export default function Navbar() {
     setSearchQuery('')
   }
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen)
+  }
+
   return (
-    <header className="pallet-header">
+    <header className={`pallet-header ${isMenuOpen ? 'menu-open' : ''}`}>
       <Link to="/" className="brand">
         <img src={logo} alt="Ec-Kart Logo" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
         <span className="brand-name">Ec-Kart</span>
       </Link>
 
-      <div className="header-center">
+      {/* Hamburger Button for Mobile */}
+      <button className="mobile-menu-toggle" onClick={toggleMenu} aria-label="Toggle Menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          {isMenuOpen ? (
+            <path d="M18 6L6 18M6 6l12 12" />
+          ) : (
+            <path d="M3 12h18M3 6h18M3 18h18" />
+          )}
+        </svg>
+      </button>
+
+      <div className={`header-center ${isMenuOpen ? 'show' : ''}`}>
         <nav className="header-links">
           <Link to="/" className={location.pathname === '/' ? 'active' : ''}>Home</Link>
           <Link to="/shop" className={location.pathname === '/shop' ? 'active' : ''}>Shop</Link>
@@ -131,7 +147,7 @@ export default function Navbar() {
         </form>
       </div>
 
-      <div className="header-actions">
+      <div className={`header-actions ${isMenuOpen ? 'show' : ''}`}>
         {/* Wishlist */}
         <Link to="/wishlist" className="action-icon wishlist-btn" title="Wishlist">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

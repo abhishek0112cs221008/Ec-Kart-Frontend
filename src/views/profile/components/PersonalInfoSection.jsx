@@ -24,10 +24,10 @@ export default function PersonalInfoSection({ user, refreshUser, setAlert }) {
   }
 
   return (
-    <div className="profile-section-content">
+    <div className="profile-section-content animate-fadeIn">
       <div className="section-header">
-        <h2>Personal Information</h2>
-        <p>Update your name and contact details.</p>
+        <h2>Identity</h2>
+        <p>Refine your personal profile details.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="personal-info-form">

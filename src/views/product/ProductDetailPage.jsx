@@ -36,6 +36,7 @@ function ProductDetailPage() {
   const [negotiatedPrice, setNegotiatedPrice] = useState(null)
 
   useEffect(() => {
+    window.scrollTo(0, 0)
     async function loadProduct() {
       try {
         setLoading(true)
